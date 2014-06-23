@@ -50,7 +50,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			for(final String profile : ProfilesManager.getProfilesName()) {
 				addItem(profile);
 			}
-			if(!Skyolauncher.config.latestProfile.equals("@null")) {
+			if(Skyolauncher.config.latestProfile != null) {
 				setSelectedItem(Skyolauncher.config.latestProfile.toString());
 			}
 		}
@@ -107,7 +107,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 		new Timer().scheduleAtFixedRate(new ServicesStatus(status.keySet()), 0, 40000);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setIconImage(LauncherConstants.LAUNCHER_ICON);
-		this.setLocation(Integer.parseInt(Skyolauncher.config.launcherPointX.toString()), Integer.parseInt(Skyolauncher.config.launcherPointY.toString()));
+		this.setLocation(Skyolauncher.config.launcherPointX, Skyolauncher.config.launcherPointY);
 		this.setPreferredSize(new Dimension(540, 400));
 		this.setResizable(false);
 		final Container pane = this.getContentPane();
@@ -131,7 +131,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			public void run() {
 				try {
 					if(ProfilesManager.getProfiles().length != 0) {
-						Skyolauncher.config.latestProfile = cboxProfile.getSelectedItem();
+						Skyolauncher.config.latestProfile = cboxProfile.getSelectedItem().toString();
 					}
 					Point location;
 					if(Skyolauncher.console != null) {

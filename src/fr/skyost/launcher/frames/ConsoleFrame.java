@@ -23,7 +23,7 @@ public class ConsoleFrame extends JFrame {
 		this.setTitle("Console");
 		this.setType(Type.POPUP);
 		this.setPreferredSize(new Dimension(510, 330));
-		this.setLocation(Integer.parseInt(Skyolauncher.config.consolePointX.toString()), Integer.parseInt(Skyolauncher.config.consolePointY.toString()));
+		this.setLocation(Skyolauncher.config.consolePointX, Skyolauncher.config.consolePointY);
 		final JTextArea txtrLogs = new JTextArea();
 		txtrLogs.setEditable(false);
 		txtrLogs.setFont(new Font("Lucida Console", Font.PLAIN, 14));

@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import fr.skyost.launcher.Skyolauncher;
 
@@ -47,6 +49,20 @@ public abstract class JsonObject {
 		printWriter.close();
 		fileWriter.close();
 	}
+	
+	public final void load() throws JsonSyntaxException, IOException, IllegalArgumentException, IllegalAccessException {
+		final File file = getFile();
+		if(!file.exists()) {
+			save();
+		}
+		else {
+			final Class<?> clazz = this.getClass();
+			final Object subClass = new Gson().fromJson(Utils.getFileContent(file, null), clazz);
+			for(final Field field : clazz.getFields()) {
+				field.set(this, field.get(subClass));
+			}
+		}
+	}
 
 	@Override
 	public final String toString() {
@@ -54,14 +70,17 @@ public abstract class JsonObject {
 	}
 
 	public enum ObjectType {
+		
 		USER(new File(Skyolauncher.system.getApplicationDirectory() + File.separator + "users")),
-		PROFILE(new File(Skyolauncher.system.getApplicationDirectory() + File.separator + "profiles"));
+		PROFILE(new File(Skyolauncher.system.getApplicationDirectory() + File.separator + "profiles")),
+		CONFIG(Skyolauncher.system.getApplicationDirectory());
 
 		public final File directory;
 
 		ObjectType(final File directory) {
 			this.directory = directory;
 		}
+		
 	}
 	
 }

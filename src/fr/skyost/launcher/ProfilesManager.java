@@ -1,10 +1,13 @@
 package fr.skyost.launcher;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import com.google.gson.JsonSyntaxException;
 
 import fr.skyost.launcher.UsersManager.User;
 import fr.skyost.launcher.utils.JsonObject;
@@ -66,23 +69,17 @@ public class ProfilesManager {
 
 	public static class LauncherProfile extends JsonObject {
 
-		public final String name;
+		public String name;
 		public String user;
 		public File gameDirectory;
 		public String arguments;
 		public String version;
 		public boolean launcherVisible;
 		public boolean logMinecraft;
-
-		public LauncherProfile(final LauncherProfile deserializedProfile) {
-			super(ObjectType.PROFILE, deserializedProfile.name);
-			name = deserializedProfile.name;
-			user = deserializedProfile.user;
-			gameDirectory = deserializedProfile.gameDirectory;
-			arguments = deserializedProfile.arguments;
-			version = deserializedProfile.version;
-			launcherVisible = deserializedProfile.launcherVisible;
-			logMinecraft = deserializedProfile.logMinecraft;
+		
+		public LauncherProfile(final String name) throws JsonSyntaxException, IllegalArgumentException, IllegalAccessException, IOException {
+			super(ObjectType.PROFILE, name);
+			load();
 		}
 
 		public LauncherProfile(final String name, final User user, final File gameDirectory, final String arguments, final String version, final boolean launcherVisible, final boolean logMinecraft) {

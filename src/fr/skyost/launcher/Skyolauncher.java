@@ -13,7 +13,6 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 
-import com.google.gson.Gson;
 import com.pagosoft.plaf.PgsLookAndFeel;
 
 import fr.skyost.launcher.ProfilesManager.LauncherProfile;
@@ -30,13 +29,14 @@ import fr.skyost.launcher.utils.Utils;
 
 public class Skyolauncher {
 
+	public static final SystemManager system = new SystemManager();
 	public static LauncherConfig config;
 	public static ConsoleFrame console;
-	public static final SystemManager system = new SystemManager();
 	public static Boolean isOnline;
 
 	public static void main(final String[] args) {
 		try {
+			config = new LauncherConfig("launcher");
 			final List<String> argsList = Arrays.asList(args);
 			PgsLookAndFeel.setCurrentTheme(new LauncherTheme());
 			UIManager.setLookAndFeel(new PgsLookAndFeel());
@@ -49,7 +49,6 @@ public class Skyolauncher {
 			if(!appDir.exists()) {
 				appDir.mkdir();
 			}
-			config = new LauncherConfig(new File(appDir, "launcher.config"));
 			if(!argsList.contains("-noconsole")) {
 				console = new ConsoleFrame();
 				console.setVisible(true);
@@ -58,11 +57,12 @@ public class Skyolauncher {
 			LogUtils.log(Level.INFO, LauncherConstants.LAUNCHER_PREFIX + Utils.buildTitle(true));
 			LogUtils.log(null, null);
 			system.getMinecraftDirectory().mkdirs();
-			final Gson gson = new Gson();
 			LogUtils.log(Level.INFO, LauncherConstants.LAUNCHER_PREFIX + "Loading profiles...");
 			if(ObjectType.PROFILE.directory.exists()) {
 				for(final File profileFile : ObjectType.PROFILE.directory.listFiles()) {
-					ProfilesManager.addProfile(new LauncherProfile(gson.fromJson(Utils.getFileContent(profileFile, null), LauncherProfile.class)));
+					final String fileName = profileFile.getName();
+					final LauncherProfile profile = new LauncherProfile(fileName.substring(0, fileName.lastIndexOf(".")));
+					ProfilesManager.addProfile(profile);
 				}
 			}
 			else {
@@ -73,7 +73,8 @@ public class Skyolauncher {
 			final List<User> onlineUsers = new ArrayList<User>();
 			if(ObjectType.USER.directory.exists()) {
 				for(final File userFile : ObjectType.USER.directory.listFiles()) {
-					final User user = new User(gson.fromJson(Utils.getFileContent(userFile, null), User.class));
+					final String fileName = userFile.getName();
+					final User user = new User(fileName.substring(0, fileName.lastIndexOf(".")));
 					UsersManager.addUser(user);
 					if(user.isOnline) {
 						onlineUsers.add(user);
