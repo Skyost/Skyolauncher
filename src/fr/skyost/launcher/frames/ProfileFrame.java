@@ -19,6 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
@@ -51,20 +52,11 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 	private LauncherProfile loadedProfile;
 	private final Color background = new Color(241, 237, 228);
 	protected final JTextField txtfldProfileName = new JTextField();
-	protected final JComboBox<String> cboxUser = new JComboBox<String>() {
-
-		private static final long serialVersionUID = 1L;
-		{
+	protected final DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>() {
+		private static final long serialVersionUID = 1L;{
 			for(final String user : UsersManager.getUsernames()) {
-				addItem(user);
+				addElement(user);
 			}
-			addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(final ActionEvent event) {
-					loadAvatar((String)getSelectedItem());
-				}
-			});
 		}
 	};
 	protected final JTextField txtfldGameDir = new JTextField();
@@ -134,12 +126,22 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 					listener.onProfileChanged(loadedProfile, null);
 				}
 			}
+			
 		});
 		final JLabel lblProfileName = new JLabel("Profile name :");
 		lblProfileName.setForeground(Color.BLACK);
 		txtfldProfileName.setColumns(10);
 		final JLabel lblUser = new JLabel("User :");
 		lblUser.setForeground(Color.BLACK);
+		final JComboBox<String> cboxUser = new JComboBox<String>(model);
+		cboxUser.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(final ActionEvent event) {
+				loadAvatar((String)cboxUser.getSelectedItem());
+			}
+			
+		});
 		final JButton btnAddAnUser = new JButton("Add an user...");
 		btnAddAnUser.addActionListener(new ActionListener() {
 
@@ -147,6 +149,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			public void actionPerformed(final ActionEvent event) {
 				new UserFrame(parent, null).setVisible(true);
 			}
+			
 		});
 		final JButton btnDeleteThisUser = new JButton("Delete this user...");
 		btnDeleteThisUser.addActionListener(new ActionListener() {
@@ -158,6 +161,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 				UsersManager.removeUser(username);
 				cboxUser.removeItem(username);
 			}
+			
 		});
 		final JLabel lblGameDir = new JLabel("Game dir :");
 		lblGameDir.setForeground(Color.BLACK);
@@ -176,6 +180,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 					txtfldGameDir.setText(selectedFile.getPath());
 				}
 			}
+			
 		});
 		final JLabel lblArguments = new JLabel("Arguments :");
 		lblArguments.setForeground(Color.BLACK);
@@ -188,6 +193,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			public void actionPerformed(final ActionEvent event) {
 				refreshVersions(parent);
 			}
+			
 		});
 		btnSave.addActionListener(new ActionListener() {
 
@@ -202,6 +208,10 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 					JOptionPane.showMessageDialog(null, "Please fill every fields.", "Skyolauncher Profile Editor", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
+				if(!Utils.isValidFileName(profileName)) {
+					JOptionPane.showMessageDialog(null, "This name is not valid !", "Skyolauncher Profile Editor", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				final File gameDir = new File(gameDirPath);
 				if(!gameDir.exists()) {
 					gameDir.mkdirs();
@@ -210,6 +220,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 					listener.onProfileChanged(loadedProfile, new LauncherProfile(profileName, UsersManager.getUser(username), gameDir, arguments, version, chckbxLeaveLauncherVisible.isSelected(), chckbxLogMinecraft.isSelected()));
 				}
 			}
+			
 		});
 		final GroupLayout groupLayout = new GroupLayout(pane);
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addContainerGap().addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addComponent(chckbxLogMinecraft).addContainerGap()).addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addComponent(btnSave, GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE).addContainerGap()).addComponent(lblArguments).addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addComponent(lblProfileName).addComponent(lblUser).addComponent(lblGameDir).addComponent(lblVersion)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addComponent(txtfldArguments, GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE).addGroup(groupLayout.createSequentialGroup().addComponent(txtfldGameDir, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.RELATED).addComponent(button, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)).addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout.createSequentialGroup().addComponent(cboxUser, 0, 238, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnAddAnUser, GroupLayout.PREFERRED_SIZE, 115, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnDeleteThisUser, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)).addGroup(groupLayout.createSequentialGroup().addComponent(cboxVersion, 0, 388, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnRefreshList, GroupLayout.PREFERRED_SIZE, 110, GroupLayout.PREFERRED_SIZE)).addComponent(txtfldProfileName, GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(lblUseravatar))).addContainerGap()).addGroup(groupLayout.createSequentialGroup().addComponent(chckbxLeaveLauncherVisible).addContainerGap(573, Short.MAX_VALUE))))));
@@ -270,7 +281,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 		this.loadedProfile = profile;
 		if(profile != null) {
 			txtfldProfileName.setText(profile.name);
-			cboxUser.setSelectedItem(UsersManager.getUserByID(profile.user).username);
+			model.setSelectedItem(UsersManager.getUserByID(profile.user).username);
 			txtfldGameDir.setText(profile.gameDirectory.getPath());
 			txtfldArguments.setText(profile.arguments);
 			cboxVersion.setSelectedItem(profile.version);
@@ -286,8 +297,10 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 
 	@Override
 	public void onUserSaved(final User user) {
-		cboxUser.addItem(user.username);
-		cboxUser.setSelectedItem(user.username);
+		if(model.getIndexOf(user.username) == -1) {
+			model.addElement(user.username);
+		}
+		model.setSelectedItem(user.username);
 	}
 
 	@Override

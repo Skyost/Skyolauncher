@@ -53,10 +53,6 @@ public class LogUtils {
 		log(level == null ? "" : "[" + formatter.format(Calendar.getInstance().getTime()) + " " + level + "] " + text);
 	}
 
-	public static final void log(final Throwable throwable) {
-		log(Level.SEVERE, getStackTrace(throwable));
-	}
-
 	public static final String getStackTrace(final Throwable throwable) {
 		final StringWriter writer = new StringWriter();
 		final PrintWriter printer = new PrintWriter(writer);
@@ -74,8 +70,12 @@ public class LogUtils {
 
 		@Override
 		public void write(final byte[] buffer, final int offset, final int length) throws IOException {
-			log(Level.SEVERE, new String(buffer, offset, length));
+			final String line = new String(buffer, offset, length);
+			if(line != null || line.length() != 0) {
+				log(Level.SEVERE, line);
+			}
 		}
+		
 	}
 	
 }

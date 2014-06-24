@@ -23,6 +23,7 @@ import fr.skyost.launcher.tasks.AutoUpdater;
 import fr.skyost.launcher.tasks.RefreshToken;
 import fr.skyost.launcher.utils.JsonObject.ObjectType;
 import fr.skyost.launcher.utils.LogUtils;
+import fr.skyost.launcher.utils.LogUtils.ErrorOutputStream;
 import fr.skyost.launcher.utils.SystemManager;
 import fr.skyost.launcher.utils.SystemManager.OS;
 import fr.skyost.launcher.utils.Utils;
@@ -53,7 +54,7 @@ public class Skyolauncher {
 				console = new ConsoleFrame();
 				console.setVisible(true);
 			}
-			System.setErr(new PrintStream(new LogUtils.ErrorOutputStream()));
+			System.setErr(new PrintStream(new ErrorOutputStream()));
 			LogUtils.log(Level.INFO, LauncherConstants.LAUNCHER_PREFIX + Utils.buildTitle(true));
 			LogUtils.log(null, null);
 			system.getMinecraftDirectory().mkdirs();

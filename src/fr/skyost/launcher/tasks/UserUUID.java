@@ -26,10 +26,11 @@ public class UserUUID extends Thread {
 	@Override
 	public void run() {
 		LogUtils.log(Level.INFO, LauncherConstants.USER_UUID_PREFIX + "Getting UUID from " + LauncherConstants.UUID_URL + "...");
-		UUID result = null;
+		UserUUID.UUID result = null;
 		try {
-			final UUIDResponse response = new Gson().fromJson(ConnectionUtils.httpJsonPost(LauncherConstants.UUID_URL, "[{\"name\":\"" + username + "\", \"agent\":\"Minecraft\"}]"), UUIDResponse.class);
-			for(final UUID uuid : response.profiles) {
+			final Gson gson = new Gson();
+			final UUIDResponse response = gson.fromJson(ConnectionUtils.httpJsonPost(LauncherConstants.UUID_URL, gson.toJson(new UUIDRequest(username, "Minecraft"))), UUIDResponse.class);
+			for(final UserUUID.UUID uuid : response.profiles) {
 				if(!uuid.name.equals(username)) {
 					result = uuid;
 					break;
@@ -43,10 +44,22 @@ public class UserUUID extends Thread {
 		LogUtils.log(Level.INFO, LauncherConstants.USER_UUID_PREFIX + "Done.");
 		parent.saveAndNotifyListeners(new User(username, result == null ? java.util.UUID.randomUUID().toString().replace("-", "") : result.id, username, false, "0", new ArrayList<Property>()));
 	}
+	
+	public class UUIDRequest {
+		
+		public String name;
+		public String agent;
+		
+		public UUIDRequest(final String name, final String agent) {
+			this.name = name;
+			this.agent = agent;
+		}
+		
+	}
 
 	public class UUIDResponse {
 
-		public List<UUID> profiles;
+		public List<UserUUID.UUID> profiles;
 		public int size;
 		
 	}

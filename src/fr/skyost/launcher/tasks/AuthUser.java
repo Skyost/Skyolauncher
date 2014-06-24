@@ -38,7 +38,7 @@ public class AuthUser extends Thread {
 			parent.saveAndNotifyListeners(new User(session.selectedProfile.name, session.selectedProfile.id, username, true, session.accessToken, session.user.properties));
 		}
 		catch(final Exception ex) {
-			LogUtils.log(ex);
+			ex.printStackTrace();
 			JOptionPane.showMessageDialog(parent, "Failed to login !", "Error !", JOptionPane.ERROR_MESSAGE);
 			parent.btnLogIn.setEnabled(true);
 			parent.btnLogIn.setText("Save");

@@ -66,7 +66,7 @@ public class RefreshToken extends Thread {
 			}
 			catch(final Exception ex) {
 				result.clear();
-				LogUtils.log(ex);
+				ex.printStackTrace();
 			}
 		}
 		else {

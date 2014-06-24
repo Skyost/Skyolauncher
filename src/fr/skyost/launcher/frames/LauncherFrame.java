@@ -278,13 +278,13 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			if(session.selectedProfile != null) {
 				final User oldUser = entry.getKey();
 				final User newUser = new User(session.selectedProfile.name, session.selectedProfile.id, oldUser.accountName, true, session.accessToken, session.user.properties);
-				profileEditor.cboxUser.removeItem(oldUser.username);
+				profileEditor.model.removeElement(oldUser.username);
 				oldUser.getFile().delete();
 				UsersManager.removeUser(oldUser.username);
 				newUser.save();
 				UsersManager.addUser(newUser);
-				profileEditor.cboxUser.addItem(newUser.username);
-				profileEditor.cboxUser.setSelectedItem(newUser.username);
+				profileEditor.model.addElement(newUser.username);
+				profileEditor.model.setSelectedItem(newUser.username);
 			}
 		}
 		tokensRefreshed = true;

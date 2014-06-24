@@ -175,5 +175,21 @@ public class Utils {
 		}
 		return path + "java";
 	}
+	
+	public static final boolean isValidFileName(final String name) {
+		final File tempDir = new File(Skyolauncher.system.getApplicationDirectory() + File.separator + "temp");
+		if(!tempDir.exists()) {
+			tempDir.mkdir();
+		}
+		final File file = new File(tempDir, name);
+		try {
+			if(file.createNewFile()) {
+				file.delete();
+				return true;
+			}
+		}
+		catch(final Exception ex) {}
+		return false;
+	}
 
 }
