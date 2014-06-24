@@ -167,7 +167,7 @@ public class GameTasks extends Thread {
 			command.add("-cp");
 			command.add(StringUtils.join(librariesPaths, pathSeparator) + pathSeparator + gameFile.getAbsolutePath());
 			command.add(game.mainClass);
-			command.addAll(Arrays.asList(getMinecraftArgs(game, UsersManager.getUserByID(profile.user), gson, assetsDir, assetsObjectsDir)));
+			command.addAll(getMinecraftArgs(game, UsersManager.getUserByID(profile.user), gson, assetsDir, assetsObjectsDir));
 			LogUtils.log(Level.INFO, "Executing command : " + StringUtils.join(command, ' '));
 			final Process process = new ProcessBuilder(command.toArray(new String[command.size()])).directory(profile.gameDirectory).start();
 			LogUtils.log(Level.INFO, LauncherConstants.GAME_TASKS_PREFIX + "Done.");
@@ -182,9 +182,9 @@ public class GameTasks extends Thread {
 		}
 	}
 	
-	private final String[] getMinecraftArgs(final Game game, final User user, final Gson gson, final File assetsDir, final File assetsObjectsDir) {
+	private final List<String> getMinecraftArgs(final Game game, final User user, final Gson gson, final File assetsDir, final File assetsObjectsDir) {
 		final HashMap<String, String> map = new HashMap<String, String>();
-		final String[] args = game.minecraftArguments.split(" ");
+		final List<String> args = new ArrayList<String>(Arrays.asList(game.minecraftArguments.split(" ")));
 		map.put("auth_player_name", user.username);
 		map.put("version_name", profile.version);
 		map.put("game_directory", profile.gameDirectory.getPath());
@@ -196,8 +196,11 @@ public class GameTasks extends Thread {
 		map.put("user_type", "mojang");
 		map.put("game_assets", assetsObjectsDir.getPath());
 		final StrSubstitutor substitutor = new StrSubstitutor(map);
-		for(int i = 0; i < args.length; i++) {
-			args[i] = substitutor.replace(args[i]);
+		for(int i = 0; i != args.size(); i++) {
+			args.set(i, substitutor.replace(args.get(i)));
+		}
+		if(LauncherConstants.MINECRAFT_SERVER_IP != null) {
+			args.addAll(Arrays.asList("--server", LauncherConstants.MINECRAFT_SERVER_IP, "--port", String.valueOf(LauncherConstants.MINECRAFT_SERVER_PORT)));
 		}
 		return args;
 	}

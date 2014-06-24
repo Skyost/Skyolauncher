@@ -48,9 +48,7 @@ public class RefreshToken extends Thread {
 				for(final User user : users) {
 					LogUtils.log(Level.INFO, LauncherConstants.REFRESH_TOKEN_PREFIX + "Refreshing access token for " + user.accountName + "...");
 					final String response = ConnectionUtils.httpJsonPost(LauncherConstants.REFRESH_TOKEN_URL, gson.toJson(new SimpleSession(user.accessToken, LauncherConstants.CLIENT_TOKEN)));
-					System.out.println(response);
 					final AuthSession session = gson.fromJson(response, AuthSession.class);
-					System.out.println(session.user.properties.get(0).value);
 					if(session.accessToken != null && session.clientToken != null) {
 						result.put(user, session);
 					}

@@ -63,6 +63,8 @@ public class LauncherConstants {
 	public static final String ASSETS_INDEXES_SUFFIX = "/indexes";
 	public static final String ASSETS_VIRTUAL_SUFFIX = "/virtual";
 	public static final String ASSETS_LEGACY_SUFFIX = "/legacy";
+	public static final String MINECRAFT_SERVER_IP = null; // Leave null if you do not want to enable this option.
+	public static final int MINECRAFT_SERVER_PORT = 25565;
 
 	/* RefreshToken options. */
 
