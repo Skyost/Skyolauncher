@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import com.google.common.base.Joiner;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrSubstitutor;
+
 import com.google.gson.Gson;
 
 import fr.skyost.launcher.LauncherConstants;
@@ -41,7 +43,6 @@ public class GameTasks extends Thread {
 		}
 		final Platform platform = Skyolauncher.system.getPlatform();
 		final OS os = platform.getOS();
-		final String classPathSeparator = "\"" + (os == OS.WINDOWS ? ";" : ":") + "\"";
 		String arch = platform.getArch().getName();
 		LogUtils.log(Level.INFO, LauncherConstants.GAME_TASKS_PREFIX + "Debug infos :");
 		LogUtils.log(Level.INFO, LauncherConstants.GAME_TASKS_PREFIX + "OS : " + os.getName());
@@ -158,17 +159,16 @@ public class GameTasks extends Thread {
 			else if(!Utils.isZipValid(gameFile) && !fixFile(gameFile, LauncherConstants.MINECRAFT_AWS_URL + gameFilePath, FileType.FILE, FixMode.INVALID)) {
 				return;
 			}
-			final User user = UsersManager.getUserByID(profile.user);
+			final String pathSeparator = System.getProperty("path.separator");
 			final List<String> command = new ArrayList<String>();
 			command.add(Utils.getJavaDir());
 			command.addAll(Arrays.asList(profile.arguments.split(" ")));
-			command.add("-Djava.library.path=\"" + nativesDir.getAbsolutePath() + "\"");
+			command.add("-Djava.library.path=" + nativesDir.getAbsolutePath());
 			command.add("-cp");
-			command.add("\"" + Joiner.on(classPathSeparator).join(librariesPaths) + classPathSeparator + gameFile.getAbsolutePath() + "\"");
+			command.add(StringUtils.join(librariesPaths, pathSeparator) + pathSeparator + gameFile.getAbsolutePath());
 			command.add(game.mainClass);
-			final List<String> mcArgs = Arrays.asList(game.minecraftArguments.replace("${auth_player_name}", user.username).replace("${version_name}", profile.version).replace("${game_directory}", "\"" + profile.gameDirectory.getPath() + "\"").replace("${assets_root}", "\"" + assetsDir.getPath() + "\"").replace("${assets_index_name}", game.assets == null ? profile.version : game.assets).replace("${auth_uuid}", user.uuid).replace("${auth_access_token}", user.accessToken).replace("${user_properties}", "{}").replace("${user_type}", "mojang").replace("${game_assets}", "\"" + assetsObjectsDir.getPath() + "\"").split(" "));
-			command.addAll(Arrays.asList(mcArgs.toArray(new String[mcArgs.size()])));
-			LogUtils.log(Level.INFO, "Executing command : " + Joiner.on(' ').join(command));
+			command.addAll(Arrays.asList(getMinecraftArgs(game, UsersManager.getUserByID(profile.user), assetsDir, assetsObjectsDir)));
+			LogUtils.log(Level.INFO, "Executing command : " + StringUtils.join(command, ' '));
 			final Process process = new ProcessBuilder(command.toArray(new String[command.size()])).directory(profile.gameDirectory).start();
 			LogUtils.log(Level.INFO, LauncherConstants.GAME_TASKS_PREFIX + "Done.");
 			if(profile.logMinecraft) {
@@ -180,6 +180,26 @@ public class GameTasks extends Thread {
 		catch(final Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	private final String[] getMinecraftArgs(final Game game, final User user, final File assetsDir, final File assetsObjectsDir) {
+		final HashMap<String, String> map = new HashMap<String, String>();
+		final String[] args = game.minecraftArguments.split(" ");
+		map.put("auth_player_name", user.username);
+		map.put("version_name", profile.version);
+		map.put("game_directory", profile.gameDirectory.getPath());
+		map.put("assets_root", assetsDir.getPath());
+		map.put("assets_index_name", game.assets == null ? profile.version : game.assets);
+		map.put("auth_uuid", user.uuid);
+		map.put("auth_access_token", user.accessToken);
+		map.put("user_properties", "{}");
+		map.put("user_type", "mojang");
+		map.put("game_assets", assetsObjectsDir.getPath());
+		final StrSubstitutor substitutor = new StrSubstitutor(map);
+		for(int i = 0; i < args.length; i++) {
+			args[i] = substitutor.replace(args[i]);
+		}
+		return args;
 	}
 
 	private final boolean fixFile(final File file, final String fileUrl, final FileType type, final FixMode mode) throws IOException {

@@ -22,7 +22,7 @@ import java.util.zip.ZipFile;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
 
-import com.google.common.base.Joiner;
+import org.apache.commons.lang3.StringUtils;
 
 import fr.skyost.launcher.LauncherConstants;
 import fr.skyost.launcher.Skyolauncher;
@@ -31,7 +31,7 @@ import fr.skyost.launcher.utils.SystemManager.OS;
 public class Utils {
 
 	public static final String buildTitle(final boolean isOnline) {
-		return (isOnline ? "" : "[OFFLINE] ") + LauncherConstants.LAUNCHER_NAME + " v" + LauncherConstants.LAUNCHER_VERSION + " " + LauncherConstants.LAUNCHER_STATUS + " - By " + Joiner.on(' ').join(LauncherConstants.LAUNCHER_AUTHORS);
+		return (isOnline ? "" : "[OFFLINE] ") + LauncherConstants.LAUNCHER_NAME + " v" + LauncherConstants.LAUNCHER_VERSION + " " + LauncherConstants.LAUNCHER_STATUS + " - By " + StringUtils.join(LauncherConstants.LAUNCHER_AUTHORS, ' ');
 	}
 
 	public static final String getFileChecksum(final File file, final MessageDigest digest) throws IOException {
