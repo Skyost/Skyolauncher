@@ -1,5 +1,6 @@
 package fr.skyost.launcher.tasks;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.swing.JOptionPane;
@@ -32,9 +33,9 @@ public class AuthUser extends Thread {
 		final AuthSession session;
 		try {
 			final Gson gson = new Gson();
-			session = gson.fromJson(ConnectionUtils.httpJsonPost(LauncherConstants.AUTHENTICATION_URL, gson.toJson(new AuthRequest(new Agent(), username, password, LauncherConstants.CLIENT_TOKEN))), AuthSession.class);
+			session = gson.fromJson(ConnectionUtils.httpJsonPost(LauncherConstants.AUTHENTICATION_URL, gson.toJson(new AuthRequest(username, password, LauncherConstants.CLIENT_TOKEN))), AuthSession.class);
 			LogUtils.log(Level.INFO, LauncherConstants.AUTH_USER_PREFIX + "Done.");
-			parent.saveAndNotifyListeners(new User(session.selectedProfile.name, session.selectedProfile.id, username, true, session.accessToken));
+			parent.saveAndNotifyListeners(new User(session.selectedProfile.name, session.selectedProfile.id, username, true, session.accessToken, session.user.properties));
 		}
 		catch(final Exception ex) {
 			LogUtils.log(ex);
@@ -46,13 +47,13 @@ public class AuthUser extends Thread {
 
 	public class AuthRequest {
 
-		public Agent agent;
+		public Agent agent = new Agent();
 		public String username;
 		public String password;
 		public String clientToken;
+		public boolean requestUser = true;
 		
-		public AuthRequest(final Agent agent, final String username, final String password, final String clientToken) {
-			this.agent = agent;
+		public AuthRequest(final String username, final String password, final String clientToken) {
 			this.username = username;
 			this.password = password;
 			this.clientToken = clientToken;
@@ -64,12 +65,14 @@ public class AuthUser extends Thread {
 
 		public String name = "Minecraft";
 		public int version = 1;
+		
 	}
 	
 	public static class SimpleSession {
 		
 		public String accessToken;
 		public String clientToken;
+		public boolean requestUser = true;
 		
 		public SimpleSession(final String accessToken, final String clientToken) {
 			this.accessToken = accessToken;
@@ -78,14 +81,27 @@ public class AuthUser extends Thread {
 		
 	}
 	
-	public static class AuthSession extends SimpleSession {
+	public class AuthSession extends SimpleSession {
 
 		public Profile selectedProfile;
+		public UserProperties user;
 		
-		public AuthSession(final String accessToken, final String clientToken, final Profile selectedProfile) {
+		public AuthSession(final String accessToken, final String clientToken) {
 			super(accessToken, clientToken);
-			this.selectedProfile = selectedProfile;
 		}
+		
+	}
+	
+	public class Property {
+		
+		public String name;
+		public String value;
+		
+	}
+	
+	public class UserProperties {
+		
+		public List<Property> properties;
 		
 	}
 

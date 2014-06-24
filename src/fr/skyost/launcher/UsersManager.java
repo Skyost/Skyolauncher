@@ -3,11 +3,13 @@ package fr.skyost.launcher;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.gson.JsonSyntaxException;
 
+import fr.skyost.launcher.tasks.AuthUser.Property;
 import fr.skyost.launcher.utils.JsonObject;
 
 public class UsersManager {
@@ -78,22 +80,24 @@ public class UsersManager {
 
 		public String username;
 		public String uuid;
+		public String accountName; //For migrated accounts.
 		public boolean isOnline;
 		public String accessToken;
-		public String accountName; //For migrated accounts.
+		public List<Property> properties;
 
 		public User(final String uuid) throws JsonSyntaxException, IllegalArgumentException, IllegalAccessException, IOException {
 			super(ObjectType.USER, uuid);
 			load();
 		}
 
-		public User(final String username, final String uuid, final String accountName, final boolean isOnline, final String accessToken) {
+		public User(final String username, final String uuid, final String accountName, final boolean isOnline, final String accessToken, final List<Property> properties) {
 			super(ObjectType.USER, uuid);
 			this.username = username;
 			this.uuid = uuid;
 			this.accountName = accountName;
 			this.isOnline = isOnline;
 			this.accessToken = accessToken;
+			this.properties = properties;
 		}
 	}
 	

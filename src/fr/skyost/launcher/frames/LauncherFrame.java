@@ -8,7 +8,6 @@ import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Timer;
@@ -37,7 +36,6 @@ import fr.skyost.launcher.tasks.RefreshToken;
 import fr.skyost.launcher.tasks.RefreshToken.RefreshTokenListener;
 import fr.skyost.launcher.tasks.ServicesStatus;
 import fr.skyost.launcher.tasks.ServicesStatus.ServiceStatusListener;
-import fr.skyost.launcher.utils.JsonObject.ObjectType;
 
 public class LauncherFrame extends JFrame implements ProfileChangesListener, ServiceStatusListener, GameTasksListener, RefreshTokenListener {
 
@@ -279,9 +277,9 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			final AuthSession session = entry.getValue();
 			if(session.selectedProfile != null) {
 				final User oldUser = entry.getKey();
-				final User newUser = new User(session.selectedProfile.name, session.selectedProfile.id, oldUser.accountName, true, session.accessToken);
+				final User newUser = new User(session.selectedProfile.name, session.selectedProfile.id, oldUser.accountName, true, session.accessToken, session.user.properties);
 				profileEditor.cboxUser.removeItem(oldUser.username);
-				new File(ObjectType.USER.directory, oldUser.username + ".json").delete();
+				oldUser.getFile().delete();
 				UsersManager.removeUser(oldUser.username);
 				newUser.save();
 				UsersManager.addUser(newUser);

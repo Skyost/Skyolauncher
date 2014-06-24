@@ -167,7 +167,7 @@ public class GameTasks extends Thread {
 			command.add("-cp");
 			command.add(StringUtils.join(librariesPaths, pathSeparator) + pathSeparator + gameFile.getAbsolutePath());
 			command.add(game.mainClass);
-			command.addAll(Arrays.asList(getMinecraftArgs(game, UsersManager.getUserByID(profile.user), assetsDir, assetsObjectsDir)));
+			command.addAll(Arrays.asList(getMinecraftArgs(game, UsersManager.getUserByID(profile.user), gson, assetsDir, assetsObjectsDir)));
 			LogUtils.log(Level.INFO, "Executing command : " + StringUtils.join(command, ' '));
 			final Process process = new ProcessBuilder(command.toArray(new String[command.size()])).directory(profile.gameDirectory).start();
 			LogUtils.log(Level.INFO, LauncherConstants.GAME_TASKS_PREFIX + "Done.");
@@ -182,7 +182,7 @@ public class GameTasks extends Thread {
 		}
 	}
 	
-	private final String[] getMinecraftArgs(final Game game, final User user, final File assetsDir, final File assetsObjectsDir) {
+	private final String[] getMinecraftArgs(final Game game, final User user, final Gson gson, final File assetsDir, final File assetsObjectsDir) {
 		final HashMap<String, String> map = new HashMap<String, String>();
 		final String[] args = game.minecraftArguments.split(" ");
 		map.put("auth_player_name", user.username);
@@ -192,7 +192,7 @@ public class GameTasks extends Thread {
 		map.put("assets_index_name", game.assets == null ? profile.version : game.assets);
 		map.put("auth_uuid", user.uuid);
 		map.put("auth_access_token", user.accessToken);
-		map.put("user_properties", "{}");
+		map.put("user_properties", gson.toJson(user.properties)); // Here we are re-using the instance of Gson.
 		map.put("user_type", "mojang");
 		map.put("game_assets", assetsObjectsDir.getPath());
 		final StrSubstitutor substitutor = new StrSubstitutor(map);

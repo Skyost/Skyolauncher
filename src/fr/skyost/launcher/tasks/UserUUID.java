@@ -1,5 +1,6 @@
 package fr.skyost.launcher.tasks;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -8,6 +9,7 @@ import com.google.gson.Gson;
 import fr.skyost.launcher.LauncherConstants;
 import fr.skyost.launcher.UsersManager.User;
 import fr.skyost.launcher.frames.UserFrame;
+import fr.skyost.launcher.tasks.AuthUser.Property;
 import fr.skyost.launcher.utils.ConnectionUtils;
 import fr.skyost.launcher.utils.LogUtils;
 
@@ -39,7 +41,7 @@ public class UserUUID extends Thread {
 			ex.printStackTrace();
 		}
 		LogUtils.log(Level.INFO, LauncherConstants.USER_UUID_PREFIX + "Done.");
-		parent.saveAndNotifyListeners(new User(username, result == null ? java.util.UUID.randomUUID().toString().replace("-", "") : result.id, username, false, "0"));
+		parent.saveAndNotifyListeners(new User(username, result == null ? java.util.UUID.randomUUID().toString().replace("-", "") : result.id, username, false, "0", new ArrayList<Property>()));
 	}
 
 	public class UUIDResponse {
