@@ -13,6 +13,7 @@ public class LauncherConfig extends JsonObject {
 	public int consolePointX = 0;
 	public int consolePointY = 0;
 	public String latestProfile = null;
+	public boolean vanillaDataImported = false;
 
 	public LauncherConfig(final String name) throws JsonSyntaxException, IllegalArgumentException, IllegalAccessException, IOException {
 		super(ObjectType.CONFIG, name);

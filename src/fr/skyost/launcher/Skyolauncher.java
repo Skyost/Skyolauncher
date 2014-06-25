@@ -21,6 +21,7 @@ import fr.skyost.launcher.frames.ConsoleFrame;
 import fr.skyost.launcher.frames.LauncherFrame;
 import fr.skyost.launcher.tasks.AutoUpdater;
 import fr.skyost.launcher.tasks.RefreshToken;
+import fr.skyost.launcher.tasks.VanillaImporter;
 import fr.skyost.launcher.utils.JsonObject.ObjectType;
 import fr.skyost.launcher.utils.LogUtils;
 import fr.skyost.launcher.utils.LogUtils.ErrorOutputStream;
@@ -38,6 +39,8 @@ public class Skyolauncher {
 	public static void main(final String[] args) {
 		try {
 			config = new LauncherConfig("launcher");
+			final File mcDir = system.getMinecraftDirectory();
+			mcDir.mkdirs();
 			final List<String> argsList = Arrays.asList(args);
 			PgsLookAndFeel.setCurrentTheme(new LauncherTheme());
 			UIManager.setLookAndFeel(new PgsLookAndFeel());
@@ -57,7 +60,6 @@ public class Skyolauncher {
 			System.setErr(new PrintStream(new ErrorOutputStream()));
 			LogUtils.log(Level.INFO, LauncherConstants.LAUNCHER_PREFIX + Utils.buildTitle(true));
 			LogUtils.log(null, null);
-			system.getMinecraftDirectory().mkdirs();
 			LogUtils.log(Level.INFO, LauncherConstants.LAUNCHER_PREFIX + "Loading profiles...");
 			if(ObjectType.PROFILE.directory.exists()) {
 				for(final File profileFile : ObjectType.PROFILE.directory.listFiles()) {
@@ -86,6 +88,10 @@ public class Skyolauncher {
 				ObjectType.USER.directory.mkdir();
 			}
 			LogUtils.log(Level.INFO, LauncherConstants.LAUNCHER_PREFIX + "Done.");
+			final File vanillaData = new File(mcDir, "launcher_profiles.json");
+			if(vanillaData.exists() && vanillaData.isFile() && !config.vanillaDataImported) {
+				new VanillaImporter(vanillaData).start();
+			}
 			new LauncherFrame().setVisible(true);
 			if(onlineUsers.size() != 0) {
 				new RefreshToken(onlineUsers.toArray(new User[onlineUsers.size()])).start();

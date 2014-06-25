@@ -53,6 +53,15 @@ public class UsersManager {
 		}
 		return null;
 	}
+	
+	public static final User getUserByAccountName(final String accountName) {
+		for(final User user : users.values()) {
+			if(user.accountName.equals(accountName)) {
+				return user;
+			}
+		}
+		return null;
+	}
 
 	public static final String[] getUsernames() {
 		final Set<String> keys = users.keySet();
@@ -99,6 +108,7 @@ public class UsersManager {
 			this.accessToken = accessToken;
 			this.properties = properties;
 		}
+		
 	}
 	
 }

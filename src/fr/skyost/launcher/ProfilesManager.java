@@ -92,6 +92,7 @@ public class ProfilesManager {
 			this.launcherVisible = launcherVisible;
 			this.logMinecraft = logMinecraft;
 		}
+		
 	}
 	
 }

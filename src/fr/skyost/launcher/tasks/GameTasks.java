@@ -162,7 +162,9 @@ public class GameTasks extends Thread {
 			final String pathSeparator = System.getProperty("path.separator");
 			final List<String> command = new ArrayList<String>();
 			command.add(Utils.getJavaDir());
-			command.addAll(Arrays.asList(profile.arguments.split(" ")));
+			if(profile.arguments != null && profile.arguments.length() != 0) {
+				command.addAll(Arrays.asList(profile.arguments.split(" ")));
+			}
 			command.add("-Djava.library.path=" + nativesDir.getAbsolutePath());
 			command.add("-cp");
 			command.add(StringUtils.join(librariesPaths, pathSeparator) + pathSeparator + gameFile.getAbsolutePath());
