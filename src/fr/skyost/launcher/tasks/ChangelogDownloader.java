@@ -16,7 +16,7 @@ public class ChangelogDownloader extends Thread {
 			try {
 				LogUtils.log(Level.INFO, LauncherConstants.CHANGELOG_DOWNLOADER_PREFIX + "Downloading changelog...");
 				final String changelog = ConnectionUtils.httpGet(LauncherConstants.CHANGELOG_URL, System.lineSeparator());
-				LogUtils.log(Level.INFO, LauncherConstants.CHANGELOG_DOWNLOADER_PREFIX + "Done !");
+				LogUtils.log(Level.INFO, LauncherConstants.CHANGELOG_DOWNLOADER_PREFIX + "Done.");
 				frame = new ChangelogFrame();
 				frame.setChangelog(changelog);
 				frame.setVisible(true);
