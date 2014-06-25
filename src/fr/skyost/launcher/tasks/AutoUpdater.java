@@ -16,7 +16,7 @@ public class AutoUpdater extends Thread {
 	public void run() {
 		LogUtils.log(Level.INFO, LauncherConstants.AUTO_UPDATER_PREFIX + "Checking for updates...");
 		try {
-			final String remoteVersion = ConnectionUtils.httpGet(LauncherConstants.LATEST_VERSION_TXT);
+			final String remoteVersion = ConnectionUtils.httpGet(LauncherConstants.LATEST_VERSION_TXT, null);
 			if(Utils.compareVersions(remoteVersion, LauncherConstants.LAUNCHER_VERSION)) {
 				LogUtils.log(Level.INFO, LauncherConstants.AUTO_UPDATER_PREFIX + "An update was found : " + remoteVersion + ".");
 				LogUtils.log(Level.INFO, LauncherConstants.AUTO_UPDATER_PREFIX + "Downloading it...");

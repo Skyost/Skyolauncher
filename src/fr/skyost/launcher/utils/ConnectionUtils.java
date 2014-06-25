@@ -29,7 +29,7 @@ public class ConnectionUtils {
 		return false;
 	}
 
-	public static final String httpGet(final String url) throws IOException {
+	public static final String httpGet(final String url, final String lineSeparator) throws IOException {
 		final HttpURLConnection connection = (HttpURLConnection)new URL(url).openConnection();
 		connection.setRequestMethod("GET");
 		connection.setRequestProperty("User-Agent", LauncherConstants.LAUNCHER_NAME + " v" + LauncherConstants.LAUNCHER_VERSION);
@@ -43,6 +43,9 @@ public class ConnectionUtils {
 		final StringBuilder builder = new StringBuilder();
 		while((line = in.readLine()) != null) {
 			builder.append(line);
+			if(lineSeparator != null) {
+				builder.append(lineSeparator);
+			}
 		}
 		in.close();
 		return builder.toString();

@@ -44,7 +44,7 @@ public class UpdateVersions extends Thread {
 		try {
 			if(isOnline) {
 				LogUtils.log(Level.INFO, LauncherConstants.UPDATE_VERSIONS_PREFIX + "Downloading versions list from " + LauncherConstants.VERSIONS_URL + "...");
-				result = gson.fromJson(ConnectionUtils.httpGet(LauncherConstants.VERSIONS_URL), VersionsResult.class);
+				result = gson.fromJson(ConnectionUtils.httpGet(LauncherConstants.VERSIONS_URL, null), VersionsResult.class);
 			}
 			else {
 				result = new VersionsResult();

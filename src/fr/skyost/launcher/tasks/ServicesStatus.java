@@ -36,7 +36,7 @@ public class ServicesStatus extends TimerTask {
 				listener.onStatusCheckBegin();
 			}
 			if(Skyolauncher.isOnline) {
-				final HashMap<?, ?>[] responses = new Gson().fromJson(ConnectionUtils.httpGet(LauncherConstants.STATUS_CHECK_URL), HashMap[].class);
+				final HashMap<?, ?>[] responses = new Gson().fromJson(ConnectionUtils.httpGet(LauncherConstants.STATUS_CHECK_URL, null), HashMap[].class);
 				for(final HashMap<?, ?> response : responses) {
 					for(final Entry<?, ?> entry : response.entrySet()) {
 						final String service = (String)entry.getKey();

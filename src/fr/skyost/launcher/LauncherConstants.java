@@ -49,6 +49,11 @@ public class LauncherConstants {
 	public static final String AUTO_UPDATER_PREFIX = "[Updater] ";
 	public static final String LATEST_VERSION_TXT = "http://www.skyost.eu/skyolauncher/latest.txt";
 	public static final String LATEST_VERSION_JAR = "http://files.skyost.eu/files/projects/Skyolauncher.jar";
+	
+	/* ChangelogDownloader options. */
+	
+	public static final String CHANGELOG_DOWNLOADER_PREFIX = "[Changelog] ";
+	public static final String CHANGELOG_URL = "http://s3.amazonaws.com/Minecraft.Download/blocknotes.txt";
 
 	/* GameTasks options. */
 
