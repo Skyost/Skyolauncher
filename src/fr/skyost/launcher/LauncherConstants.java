@@ -48,7 +48,7 @@ public class LauncherConstants {
 
 	public static final String AUTO_UPDATER_PREFIX = "[Updater] ";
 	public static final String LATEST_VERSION_TXT = "http://www.skyost.eu/skyolauncher/latest.txt";
-	public static final String LATEST_VERSION_JAR = "http://files.skyost.eu/files/projects/Skyolauncher.jar";
+	public static final String LATEST_VERSION_JAR = "http://www.skyost.eu/skyolauncher/download.php";
 	
 	/* ChangelogDownloader options. */
 	
