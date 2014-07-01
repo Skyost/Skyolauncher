@@ -1,5 +1,6 @@
 package fr.skyost.launcher.tasks;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -36,13 +37,13 @@ public class UserUUID extends Thread {
 					break;
 				}
 			}
-			LogUtils.log(Level.INFO, LauncherConstants.USER_UUID_PREFIX + (result != null ? "User found on Mojang servers, his UUID has been obtained." : "User not found on Mojang servers. Generating a random UUID..."));
+			LogUtils.log(Level.INFO, LauncherConstants.USER_UUID_PREFIX + (result != null ? "User found on Mojang servers, his UUID has been obtained." : "User not found on Mojang servers. Generating a semi-random UUID..."));
 		}
 		catch(final Exception ex) {
 			ex.printStackTrace();
 		}
 		LogUtils.log(Level.INFO, LauncherConstants.USER_UUID_PREFIX + "Done.");
-		parent.saveAndNotifyListeners(new User(username, result == null ? java.util.UUID.randomUUID().toString().replace("-", "") : result.id, username, false, "0", new ArrayList<Property>()));
+		parent.saveAndNotifyListeners(new User(username, result == null ? java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charset.forName("UTF-8"))).toString().replace("-", "") : java.util.UUID.fromString(result.id).toString(), username, false, "0", new ArrayList<Property>()));
 	}
 	
 	public class UUIDRequest {

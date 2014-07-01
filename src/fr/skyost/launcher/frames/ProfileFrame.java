@@ -54,7 +54,9 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 	private final Color background = new Color(241, 237, 228);
 	protected final JTextField txtfldProfileName = new JTextField();
 	protected final DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>() {
-		private static final long serialVersionUID = 1L;{
+
+		private static final long serialVersionUID = 1L;
+		{
 			for(final String user : UsersManager.getUsernames()) {
 				addElement(user);
 			}
@@ -127,7 +129,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 					listener.onProfileChanged(loadedProfile, null);
 				}
 			}
-			
+
 		});
 		final JLabel lblProfileName = new JLabel("Profile name :");
 		lblProfileName.setForeground(Color.BLACK);
@@ -141,7 +143,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			public void actionPerformed(final ActionEvent event) {
 				loadAvatar((String)cboxUser.getSelectedItem());
 			}
-			
+
 		});
 		final JButton btnAddAnUser = new JButton("Add an user...");
 		btnAddAnUser.addActionListener(new ActionListener() {
@@ -150,7 +152,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			public void actionPerformed(final ActionEvent event) {
 				new UserFrame(parent, null).setVisible(true);
 			}
-			
+
 		});
 		final JButton btnDeleteThisUser = new JButton("Delete this user...");
 		btnDeleteThisUser.addActionListener(new ActionListener() {
@@ -158,11 +160,11 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			@Override
 			public void actionPerformed(final ActionEvent event) {
 				final String username = (String)cboxUser.getSelectedItem();
-				UsersManager.getUser(username).getFile().delete();
+				UsersManager.getUser(username).getFile().delete(); //TODO : Others profiles with same user fail to launch.
 				UsersManager.removeUser(username);
 				cboxUser.removeItem(username);
 			}
-			
+
 		});
 		final JLabel lblGameDir = new JLabel("Game dir :");
 		lblGameDir.setForeground(Color.BLACK);
@@ -181,7 +183,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 					txtfldGameDir.setText(selectedFile.getPath());
 				}
 			}
-			
+
 		});
 		final JLabel lblArguments = new JLabel("Arguments :");
 		lblArguments.setForeground(Color.BLACK);
@@ -194,16 +196,16 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			public void actionPerformed(final ActionEvent event) {
 				refreshVersions(parent);
 			}
-			
+
 		});
 		final JButton btnChangelog = new JButton("Changelog...");
 		btnChangelog.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(final ActionEvent event) {
 				new ChangelogDownloader().start();
 			}
-			
+
 		});
 		btnSave.addActionListener(new ActionListener() {
 
@@ -230,96 +232,11 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 					listener.onProfileChanged(loadedProfile, new LauncherProfile(profileName, UsersManager.getUser(username), gameDir, arguments, version, chckbxLeaveLauncherVisible.isSelected(), chckbxLogMinecraft.isSelected()));
 				}
 			}
-			
+
 		});
 		final GroupLayout groupLayout = new GroupLayout(pane);
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(chckbxLogMinecraft)
-							.addContainerGap())
-						.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(btnSave, GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE)
-								.addContainerGap())
-							.addComponent(lblArguments)
-							.addGroup(groupLayout.createSequentialGroup()
-								.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-									.addComponent(lblProfileName)
-									.addComponent(lblUser)
-									.addComponent(lblGameDir)
-									.addComponent(lblVersion))
-								.addPreferredGap(ComponentPlacement.RELATED)
-								.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-									.addComponent(txtfldArguments, GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
-									.addGroup(groupLayout.createSequentialGroup()
-										.addComponent(txtfldGameDir, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE)
-										.addPreferredGap(ComponentPlacement.RELATED)
-										.addComponent(button, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
-									.addGroup(groupLayout.createSequentialGroup()
-										.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-											.addComponent(txtfldProfileName, GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
-											.addGroup(groupLayout.createSequentialGroup()
-												.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-													.addComponent(cboxVersion, 0, 238, Short.MAX_VALUE)
-													.addComponent(cboxUser, 0, 238, Short.MAX_VALUE))
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-													.addComponent(btnChangelog, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-													.addComponent(btnAddAnUser, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE))
-												.addPreferredGap(ComponentPlacement.RELATED)
-												.addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false)
-													.addComponent(btnRefreshList, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-													.addComponent(btnDeleteThisUser, GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE))))
-										.addPreferredGap(ComponentPlacement.UNRELATED)
-										.addComponent(lblUseravatar)))
-								.addContainerGap())
-							.addGroup(groupLayout.createSequentialGroup()
-								.addComponent(chckbxLeaveLauncherVisible)
-								.addContainerGap(573, Short.MAX_VALUE)))))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap(22, Short.MAX_VALUE)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblProfileName)
-								.addComponent(txtfldProfileName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblUser)
-								.addComponent(cboxUser, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnDeleteThisUser)
-								.addComponent(btnAddAnUser))
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(lblVersion)
-								.addComponent(cboxVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(btnChangelog)
-								.addComponent(btnRefreshList)))
-						.addComponent(lblUseravatar))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblGameDir)
-						.addComponent(button)
-						.addComponent(txtfldGameDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblArguments)
-						.addComponent(txtfldArguments, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-					.addPreferredGap(ComponentPlacement.UNRELATED)
-					.addComponent(chckbxLeaveLauncherVisible)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(chckbxLogMinecraft)
-					.addGap(9)
-					.addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap())
-		);
+		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addContainerGap().addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addComponent(chckbxLogMinecraft).addContainerGap()).addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addComponent(btnSave, GroupLayout.DEFAULT_SIZE, 584, Short.MAX_VALUE).addContainerGap()).addComponent(lblArguments).addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addComponent(lblProfileName).addComponent(lblUser).addComponent(lblGameDir).addComponent(lblVersion)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addComponent(txtfldArguments, GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE).addGroup(groupLayout.createSequentialGroup().addComponent(txtfldGameDir, GroupLayout.DEFAULT_SIZE, 463, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.RELATED).addComponent(button, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)).addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addComponent(txtfldProfileName, GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE).addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addComponent(cboxVersion, 0, 238, Short.MAX_VALUE).addComponent(cboxUser, 0, 238, Short.MAX_VALUE)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false).addComponent(btnChangelog, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(btnAddAnUser, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 115, Short.MAX_VALUE)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.LEADING, false).addComponent(btnRefreshList, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(btnDeleteThisUser, GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)))).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(lblUseravatar))).addContainerGap()).addGroup(groupLayout.createSequentialGroup().addComponent(chckbxLeaveLauncherVisible).addContainerGap(573, Short.MAX_VALUE))))));
+		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addContainerGap(22, Short.MAX_VALUE).addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblProfileName).addComponent(txtfldProfileName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblUser).addComponent(cboxUser, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addComponent(btnDeleteThisUser).addComponent(btnAddAnUser)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblVersion).addComponent(cboxVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addComponent(btnChangelog).addComponent(btnRefreshList))).addComponent(lblUseravatar)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblGameDir).addComponent(button).addComponent(txtfldGameDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblArguments).addComponent(txtfldArguments, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(chckbxLeaveLauncherVisible).addPreferredGap(ComponentPlacement.RELATED).addComponent(chckbxLogMinecraft).addGap(9).addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE).addContainerGap()));
 		pane.setLayout(groupLayout);
 		loadProfile(loadedProfile);
 		refreshVersions(parent);
@@ -416,10 +333,10 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 		btnRefreshList.setEnabled(true);
 		btnSave.setText("Save");
 	}
-	
+
 	public interface ProfileChangesListener {
 
 		public void onProfileChanged(final LauncherProfile oldProfile, final LauncherProfile newProfile);
-		
+
 	}
 }

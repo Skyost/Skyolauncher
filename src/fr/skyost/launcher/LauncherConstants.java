@@ -20,7 +20,7 @@ public class LauncherConstants {
 	/* Launcher globals options. */
 
 	public static final String LAUNCHER_NAME = "Skyolauncher";
-	public static final String LAUNCHER_VERSION = "0.1";
+	public static final String LAUNCHER_VERSION = "0.1.1";
 	public static final String LAUNCHER_STATUS = "BETA";
 	public static final String[] LAUNCHER_AUTHORS = new String[]{"Skyost"};
 	public static final String LAUNCHER_PREFIX = "[Launcher] ";

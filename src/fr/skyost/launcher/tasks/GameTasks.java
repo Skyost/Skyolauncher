@@ -2,12 +2,14 @@ package fr.skyost.launcher.tasks;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +22,7 @@ import fr.skyost.launcher.ProfilesManager.LauncherProfile;
 import fr.skyost.launcher.Skyolauncher;
 import fr.skyost.launcher.UsersManager;
 import fr.skyost.launcher.UsersManager.User;
+import fr.skyost.launcher.tasks.AuthUser.Property;
 import fr.skyost.launcher.utils.ConnectionUtils;
 import fr.skyost.launcher.utils.LogUtils;
 import fr.skyost.launcher.utils.SystemManager.OS;
@@ -165,11 +168,12 @@ public class GameTasks extends Thread {
 			if(profile.arguments != null && profile.arguments.length() != 0) {
 				command.addAll(Arrays.asList(profile.arguments.split(" ")));
 			}
+			final User user = UsersManager.getUserByID(profile.user);
 			command.add("-Djava.library.path=" + nativesDir.getAbsolutePath());
 			command.add("-cp");
 			command.add(StringUtils.join(librariesPaths, pathSeparator) + pathSeparator + gameFile.getAbsolutePath());
 			command.add(game.mainClass);
-			command.addAll(getMinecraftArgs(game, UsersManager.getUserByID(profile.user), gson, assetsDir, assetsObjectsDir));
+			command.addAll(getMinecraftArgs(game, user == null ? new User("Player", UUID.nameUUIDFromBytes(("OfflinePlayer:Player").getBytes(Charset.forName("UTF-8"))).toString().replace("-", ""), "Player", false, "0", new ArrayList<Property>()) : user, gson, assetsDir, assetsObjectsDir));
 			LogUtils.log(Level.INFO, "Executing command : " + StringUtils.join(command, ' '));
 			final Process process = new ProcessBuilder(command.toArray(new String[command.size()])).directory(profile.gameDirectory).start();
 			LogUtils.log(Level.INFO, LauncherConstants.GAME_TASKS_PREFIX + "Done.");
