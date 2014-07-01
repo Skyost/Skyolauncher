@@ -43,7 +43,7 @@ public class UserUUID extends Thread {
 			ex.printStackTrace();
 		}
 		LogUtils.log(Level.INFO, LauncherConstants.USER_UUID_PREFIX + "Done.");
-		parent.saveAndNotifyListeners(new User(username, result == null ? java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charset.forName("UTF-8"))).toString().replace("-", "") : java.util.UUID.fromString(result.id).toString(), username, false, "0", new ArrayList<Property>()));
+		parent.saveAndNotifyListeners(new User(username, result == null ? java.util.UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(Charset.forName("UTF-8"))).toString().replace("-", "") : result.id, username, false, "0", new ArrayList<Property>()));
 	}
 	
 	public class UUIDRequest {
