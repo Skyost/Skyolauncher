@@ -27,7 +27,7 @@ public class AutoUpdater extends Thread {
 					bak.renameTo(new File(destination.getAbsolutePath() + "-bak"));
 					destination.createNewFile();
 				}
-				ConnectionUtils.download(LauncherConstants.LATEST_VERSION_JAR, destination);
+				ConnectionUtils.download(LauncherConstants.LATEST_VERSION_JAR, destination, null);
 				LogUtils.log(Level.INFO, LauncherConstants.AUTO_UPDATER_PREFIX + "Done. The updated launcher's path is : " + path + ".");
 			}
 			else {

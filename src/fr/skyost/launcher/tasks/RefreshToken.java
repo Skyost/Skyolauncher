@@ -35,13 +35,6 @@ public class RefreshToken extends Thread {
 			listener.onTokenTaskBegin();
 		}
 		final HashMap<User, AuthSession> result = new HashMap<User, AuthSession>();
-		boolean waitingSent = false;
-		while(Skyolauncher.isOnline == null) {
-			if(!waitingSent) {
-				LogUtils.log(Level.INFO, LauncherConstants.REFRESH_TOKEN_PREFIX + "Waiting for the connectivity checker...");
-				waitingSent = true;
-			}
-		}
 		if(Skyolauncher.isOnline) {
 			try {
 				final Gson gson = new Gson();

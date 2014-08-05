@@ -10,7 +10,7 @@ import java.util.Set;
 import com.google.gson.JsonSyntaxException;
 
 import fr.skyost.launcher.UsersManager.User;
-import fr.skyost.launcher.utils.JsonObject;
+import fr.skyost.launcher.utils.JSONObject;
 
 public class ProfilesManager {
 
@@ -67,7 +67,7 @@ public class ProfilesManager {
 		profiles.put(profileName, profile);
 	}
 
-	public static class LauncherProfile extends JsonObject {
+	public static class LauncherProfile extends JSONObject {
 
 		public String name;
 		public String user;

@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import com.google.gson.JsonSyntaxException;
 
-import fr.skyost.launcher.utils.JsonObject;
+import fr.skyost.launcher.utils.JSONObject;
 
-public class LauncherConfig extends JsonObject {
+public class LauncherConfig extends JSONObject {
 
 	public int launcherPointX = 0;
 	public int launcherPointY = 0;

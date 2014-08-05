@@ -29,7 +29,6 @@ public class ServicesStatus extends TimerTask {
 
 	@Override
 	public void run() {
-		Skyolauncher.isOnline = ConnectionUtils.isOnline();
 		final HashMap<String, Boolean> result = new HashMap<String, Boolean>();
 		try {
 			for(final ServiceStatusListener listener : listeners) {

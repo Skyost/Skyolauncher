@@ -11,20 +11,35 @@ import com.google.gson.JsonSyntaxException;
 
 import fr.skyost.launcher.Skyolauncher;
 
-public abstract class JsonObject {
+public abstract class JSONObject {
 
 	private transient ObjectType type;
 	private transient String id;
 
-	public JsonObject(final ObjectType type, final String id) {
+	public JSONObject(final ObjectType type, final String id) {
 		this.type = type;
 		this.id = id;
 	}
-
-	public final File getFile() {
-		return new File(type.directory, id + ".json");
+	
+	@Override
+	public final String toString() {
+		return new Gson().toJson(this);
 	}
-
+	
+	public final void load() throws JsonSyntaxException, IOException, IllegalArgumentException, IllegalAccessException {
+		final File file = getFile();
+		if(!file.exists()) {
+			save();
+		}
+		else {
+			final Class<?> clazz = this.getClass();
+			final Object subClass = new Gson().fromJson(Utils.getFileContent(file, null), clazz);
+			for(final Field field : clazz.getFields()) {
+				field.set(this, field.get(subClass));
+			}
+		}
+	}
+	
 	public final void save() {
 		try {
 			final File file = getFile();
@@ -49,31 +64,16 @@ public abstract class JsonObject {
 		printWriter.close();
 		fileWriter.close();
 	}
-	
-	public final void load() throws JsonSyntaxException, IOException, IllegalArgumentException, IllegalAccessException {
-		final File file = getFile();
-		if(!file.exists()) {
-			save();
-		}
-		else {
-			final Class<?> clazz = this.getClass();
-			final Object subClass = new Gson().fromJson(Utils.getFileContent(file, null), clazz);
-			for(final Field field : clazz.getFields()) {
-				field.set(this, field.get(subClass));
-			}
-		}
-	}
 
-	@Override
-	public final String toString() {
-		return new Gson().toJson(this);
+	public final File getFile() {
+		return new File(type.directory, id + ".json");
 	}
 
 	public enum ObjectType {
 		
-		USER(new File(Skyolauncher.system.getApplicationDirectory() + File.separator + "users")),
-		PROFILE(new File(Skyolauncher.system.getApplicationDirectory() + File.separator + "profiles")),
-		CONFIG(Skyolauncher.system.getApplicationDirectory());
+		USER(new File(Skyolauncher.SYSTEM.getApplicationDirectory() + File.separator + "users")),
+		PROFILE(new File(Skyolauncher.SYSTEM.getApplicationDirectory() + File.separator + "profiles")),
+		CONFIG(Skyolauncher.SYSTEM.getApplicationDirectory());
 
 		public final File directory;
 

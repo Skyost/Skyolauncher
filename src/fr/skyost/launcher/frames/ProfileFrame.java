@@ -44,7 +44,6 @@ import fr.skyost.launcher.tasks.UpdateVersions;
 import fr.skyost.launcher.tasks.UpdateVersions.Version;
 import fr.skyost.launcher.tasks.UpdateVersions.VersionsListener;
 import fr.skyost.launcher.tasks.UpdateVersions.VersionsResult;
-import fr.skyost.launcher.utils.ConnectionUtils;
 import fr.skyost.launcher.utils.Utils;
 
 public class ProfileFrame extends JDialog implements UserChangesListener, VersionsListener {
@@ -61,6 +60,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 				addElement(user);
 			}
 		}
+		
 	};
 	protected final JTextField txtfldGameDir = new JTextField();
 	protected final JTextField txtfldArguments = new JTextField();
@@ -73,6 +73,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			setBackground(background);
 			setForeground(Color.BLACK);
 		}
+		
 	};
 	protected final JCheckBox chckbxLogMinecraft = new JCheckBox("Log Minecraft") {
 
@@ -81,6 +82,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			setBackground(background);
 			setForeground(Color.BLACK);
 		}
+		
 	};
 	protected JLabel lblUseravatar = new JLabel("UserAvatar") {
 
@@ -89,6 +91,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			setFont(getFont().deriveFont(Font.ITALIC));
 			setForeground(Color.BLACK);
 		}
+		
 	};
 	protected final JButton btnSave = new JButton("Save") {
 
@@ -96,6 +99,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 		{
 			setFont(getFont().deriveFont(Font.BOLD));
 		}
+		
 	};
 	private static final HashMap<String, BufferedImage> cache = new HashMap<String, BufferedImage>();
 	public static final List<ProfileChangesListener> listeners = new ArrayList<ProfileChangesListener>();
@@ -107,6 +111,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 	/**
 	 * @wbp.parser.constructor
 	 */
+	
 	public ProfileFrame(final LauncherFrame parent, final LauncherProfile profile) {
 		UpdateVersions.addListener(this);
 		UserFrame.addListener(this);
@@ -160,7 +165,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 			@Override
 			public void actionPerformed(final ActionEvent event) {
 				final String username = (String)cboxUser.getSelectedItem();
-				UsersManager.getUser(username).getFile().delete(); //TODO : Others profiles with same user fail to launch.
+				UsersManager.getUser(username).getFile().delete();
 				UsersManager.removeUser(username);
 				cboxUser.removeItem(username);
 			}
@@ -194,7 +199,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 
 			@Override
 			public void actionPerformed(final ActionEvent event) {
-				refreshVersions(parent);
+				refreshVersions();
 			}
 
 		});
@@ -216,7 +221,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 				final String gameDirPath = txtfldGameDir.getText();
 				final String arguments = txtfldArguments.getText();
 				final String version = (String)cboxVersion.getSelectedItem();
-				if(profileName.length() == 0 || username == null || gameDirPath.length() == 0 || arguments.length() == 0 || version == null) {
+				if(profileName.length() == 0 || username == null || gameDirPath.length() == 0 || version == null) {
 					JOptionPane.showMessageDialog(null, "Please fill every fields.", "Skyolauncher Profile Editor", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
@@ -229,7 +234,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 					gameDir.mkdirs();
 				}
 				for(final ProfileChangesListener listener : listeners) {
-					listener.onProfileChanged(loadedProfile, new LauncherProfile(profileName, UsersManager.getUser(username), gameDir, arguments, version, chckbxLeaveLauncherVisible.isSelected(), chckbxLogMinecraft.isSelected()));
+					listener.onProfileChanged(loadedProfile, new LauncherProfile(profileName, UsersManager.getUser(username), gameDir, arguments.length() == 0 ? null : arguments, version, chckbxLeaveLauncherVisible.isSelected(), chckbxLogMinecraft.isSelected()));
 				}
 			}
 
@@ -239,7 +244,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addContainerGap(22, Short.MAX_VALUE).addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblProfileName).addComponent(txtfldProfileName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblUser).addComponent(cboxUser, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addComponent(btnDeleteThisUser).addComponent(btnAddAnUser)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblVersion).addComponent(cboxVersion, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addComponent(btnChangelog).addComponent(btnRefreshList))).addComponent(lblUseravatar)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblGameDir).addComponent(button).addComponent(txtfldGameDir, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblArguments).addComponent(txtfldArguments, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(chckbxLeaveLauncherVisible).addPreferredGap(ComponentPlacement.RELATED).addComponent(chckbxLogMinecraft).addGap(9).addComponent(btnSave, GroupLayout.PREFERRED_SIZE, 29, GroupLayout.PREFERRED_SIZE).addContainerGap()));
 		pane.setLayout(groupLayout);
 		loadProfile(loadedProfile);
-		refreshVersions(parent);
+		refreshVersions();
 		loadAvatar((String)cboxUser.getSelectedItem());
 		this.pack();
 	}
@@ -265,6 +270,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 							public void run() {
 								cache.remove(username);
 							}
+							
 						}, 0, 30000);
 						lblUseravatar.setText(null);
 						lblUseravatar.setIcon(new ImageIcon(image));
@@ -275,25 +281,33 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 					}
 				}
 			}
+			
 		}.start();
 	}
 
-	public final void refreshVersions(final LauncherFrame parent) {
-		Skyolauncher.isOnline = ConnectionUtils.isOnline();
-		parent.setTitle(Utils.buildTitle(Skyolauncher.isOnline));
-		if(Skyolauncher.isOnline) {
-			new UpdateVersions().start();
-		}
-		else {
-			new UpdateVersions(new File(txtfldGameDir.getText() + File.separator + "versions")).start();
-		}
+	public final void refreshVersions() {
+		new Thread() {
+			
+			@Override
+			public final void run() {
+				if(Skyolauncher.isOnline) {
+					new UpdateVersions().start();
+				}
+				else {
+					new UpdateVersions(new File(txtfldGameDir.getText() + File.separator + "versions")).start();
+				}
+			}
+			
+		}.start();
 	}
 
 	public final void loadProfile(final LauncherProfile profile) {
 		this.loadedProfile = profile;
 		if(profile != null) {
 			txtfldProfileName.setText(profile.name);
-			model.setSelectedItem(UsersManager.getUserByID(profile.user).username);
+			if(profile.user != null) {
+				model.setSelectedItem(UsersManager.getUserByID(profile.user).username);
+			}
 			txtfldGameDir.setText(profile.gameDirectory.getPath());
 			txtfldArguments.setText(profile.arguments);
 			cboxVersion.setSelectedItem(profile.version);
@@ -302,7 +316,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 		}
 		else {
 			txtfldProfileName.setText("New profile");
-			txtfldGameDir.setText(Skyolauncher.system.getMinecraftDirectory().getPath());
+			txtfldGameDir.setText(Skyolauncher.SYSTEM.getMinecraftDirectory().getPath());
 			txtfldArguments.setText("-Xms512m -Xmx1024m");
 		}
 	}

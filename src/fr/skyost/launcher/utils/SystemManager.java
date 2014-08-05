@@ -3,6 +3,7 @@ package fr.skyost.launcher.utils;
 import java.io.File;
 
 import fr.skyost.launcher.LauncherConstants;
+import fr.skyost.launcher.Skyolauncher;
 
 public class SystemManager {
 
@@ -62,8 +63,13 @@ public class SystemManager {
 	public final File getMinecraftDirectory() {
 		return new File(getUserDirectory() + File.separator + (platform.getOS() == OS.MAC ? "" : ".") + "minecraft");
 	}
+	
+	public final File getLauncherTemporaryDirectory() {
+		return new File(Skyolauncher.SYSTEM.getApplicationDirectory() + File.separator + "temp");
+	}
 
 	public enum OS {
+		
 		WINDOWS("Windows", "windows"),
 		MAC("Mac OS X", "osx"),
 		LINUX("Other (Linux ?)", "linux");
@@ -83,9 +89,11 @@ public class SystemManager {
 		public final String getMinecraftName() {
 			return minecraftName;
 		}
+		
 	}
 
 	public enum Arch {
+		
 		X86("x86"),
 		X64("x64");
 
@@ -98,6 +106,7 @@ public class SystemManager {
 		public final String getName() {
 			return name;
 		}
+		
 	}
 
 	public static class Platform {
@@ -117,6 +126,7 @@ public class SystemManager {
 		public final Arch getArch() {
 			return arch;
 		}
+		
 	}
 	
 }

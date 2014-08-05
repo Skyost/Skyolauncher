@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import javax.swing.JProgressBar;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 
@@ -32,11 +34,13 @@ import fr.skyost.launcher.utils.Utils;
 public class GameTasks extends Thread {
 
 	private final LauncherProfile profile;
+	private final JProgressBar downloadProgress;
 	
 	private static final List<GameTasksListener> listeners = new ArrayList<GameTasksListener>();
 
-	public GameTasks(final LauncherProfile profile) {
+	public GameTasks(final LauncherProfile profile, final JProgressBar downloadProgress) {
 		this.profile = profile;
+		this.downloadProgress = downloadProgress;
 	}
 
 	@Override
@@ -44,7 +48,7 @@ public class GameTasks extends Thread {
 		for(final GameTasksListener listener : listeners) {
 			listener.onGameTasksBegin();
 		}
-		final Platform platform = Skyolauncher.system.getPlatform();
+		final Platform platform = Skyolauncher.SYSTEM.getPlatform();
 		final OS os = platform.getOS();
 		String arch = platform.getArch().getName();
 		LogUtils.log(Level.INFO, LauncherConstants.GAME_TASKS_PREFIX + "Debug infos :");
@@ -165,7 +169,7 @@ public class GameTasks extends Thread {
 			final String pathSeparator = System.getProperty("path.separator");
 			final List<String> command = new ArrayList<String>();
 			command.add(Utils.getJavaDir());
-			if(profile.arguments != null && profile.arguments.length() != 0) {
+			if(profile.arguments != null) {
 				command.addAll(Arrays.asList(profile.arguments.split(" ")));
 			}
 			final User user = UsersManager.getUserByID(profile.user);
@@ -174,7 +178,7 @@ public class GameTasks extends Thread {
 			command.add(StringUtils.join(librariesPaths, pathSeparator) + pathSeparator + gameFile.getAbsolutePath());
 			command.add(game.mainClass);
 			command.addAll(getMinecraftArgs(game, user == null ? new User("Player", UUID.nameUUIDFromBytes(("OfflinePlayer:Player").getBytes(Charset.forName("UTF-8"))).toString().replace("-", ""), "Player", false, "0", new ArrayList<Property>()) : user, gson, assetsDir, assetsObjectsDir));
-			LogUtils.log(Level.INFO, "Executing command : " + StringUtils.join(command, ' '));
+			LogUtils.log(Level.INFO, LauncherConstants.GAME_TASKS_PREFIX + "Executing command : " + StringUtils.join(command, ' '));
 			final Process process = new ProcessBuilder(command.toArray(new String[command.size()])).directory(profile.gameDirectory).start();
 			LogUtils.log(Level.INFO, LauncherConstants.GAME_TASKS_PREFIX + "Done.");
 			if(profile.logMinecraft) {
@@ -191,6 +195,10 @@ public class GameTasks extends Thread {
 	private final List<String> getMinecraftArgs(final Game game, final User user, final Gson gson, final File assetsDir, final File assetsObjectsDir) {
 		final HashMap<String, String> map = new HashMap<String, String>();
 		final List<String> args = new ArrayList<String>(Arrays.asList(game.minecraftArguments.split(" ")));
+		final HashMap<String, List<String>> properties = new HashMap<String, List<String>>();
+		for(final Property property : user.properties) {
+			properties.put(property.name, Arrays.asList(property.value));
+		}
 		map.put("auth_player_name", user.username);
 		map.put("version_name", profile.version);
 		map.put("game_directory", profile.gameDirectory.getPath());
@@ -198,7 +206,7 @@ public class GameTasks extends Thread {
 		map.put("assets_index_name", game.assets == null ? profile.version : game.assets);
 		map.put("auth_uuid", user.uuid);
 		map.put("auth_access_token", user.accessToken);
-		map.put("user_properties", gson.toJson(user.properties)); // Here we are re-using the instance of Gson.
+		map.put("user_properties", gson.toJson(properties));
 		map.put("user_type", "mojang");
 		map.put("game_assets", assetsObjectsDir.getPath());
 		final StrSubstitutor substitutor = new StrSubstitutor(map);
@@ -219,12 +227,15 @@ public class GameTasks extends Thread {
 				file.getParentFile().mkdirs();
 			}
 			file.createNewFile();
-			if(!ConnectionUtils.download(fileUrl, file)) {
+			initializeGuiComponents(file.getName());
+			if(!ConnectionUtils.download(fileUrl, file, downloadProgress)) {
 				LogUtils.log(Level.SEVERE, LauncherConstants.GAME_TASKS_PREFIX + "Failed !");
 				file.delete();
 				notifyListeners(false);
+				resetGuiComponents();
 				return false;
 			}
+			resetGuiComponents();
 			return true;
 		}
 		else {
@@ -234,6 +245,15 @@ public class GameTasks extends Thread {
 			notifyListeners(false);
 			return false;
 		}
+	}
+	
+	private final void initializeGuiComponents(final String fileName) {
+		downloadProgress.setVisible(true);
+	}
+	
+	private final void resetGuiComponents() {
+		downloadProgress.setString(null);
+		downloadProgress.setVisible(false);
 	}
 
 	public final void notifyListeners(final boolean success) {
@@ -322,6 +342,7 @@ public class GameTasks extends Thread {
 			}
 			return false;
 		}
+		
 	}
 
 	public class DLRule {

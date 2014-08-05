@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.lang.reflect.Array;
 import java.security.MessageDigest;
 import java.util.Enumeration;
 import java.util.List;
@@ -41,7 +40,6 @@ public class Utils {
 		while((nread = input.read(dataBytes)) != -1) {
 			digest.update(dataBytes, 0, nread);
 		}
-		;
 		final byte[] mdbytes = digest.digest();
 		final StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < mdbytes.length; i++) {
@@ -158,26 +156,16 @@ public class Utils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static final <T> T[] concatenate(final T[] A, final T[] B) {
-		int aLen = A.length;
-		int bLen = B.length;
-		final T[] C = (T[])Array.newInstance(A.getClass().getComponentType(), aLen + bLen);
-		System.arraycopy(A, 0, C, 0, aLen);
-		System.arraycopy(B, 0, C, aLen, bLen);
-		return C;
-	}
-
 	public static final String getJavaDir() {
 		final String path = System.getProperty("java.home") + File.separator + "bin" + File.separator;
-		if(Skyolauncher.system.getPlatform().getOS() == OS.WINDOWS && new File(path + "javaw.exe").isFile()) {
+		if(Skyolauncher.SYSTEM.getPlatform().getOS() == OS.WINDOWS && new File(path + "javaw.exe").isFile()) {
 			return path + "javaw.exe";
 		}
 		return path + "java";
 	}
 	
 	public static final boolean isValidFileName(final String name) {
-		final File tempDir = new File(Skyolauncher.system.getApplicationDirectory() + File.separator + "temp");
+		final File tempDir = Skyolauncher.SYSTEM.getLauncherTemporaryDirectory();
 		if(!tempDir.exists()) {
 			tempDir.mkdir();
 		}

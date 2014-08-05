@@ -20,10 +20,11 @@ import fr.skyost.launcher.UsersManager.User;
 import fr.skyost.launcher.frames.ConsoleFrame;
 import fr.skyost.launcher.frames.LauncherFrame;
 import fr.skyost.launcher.tasks.AutoUpdater;
+import fr.skyost.launcher.tasks.ConnectivityChecker;
 import fr.skyost.launcher.tasks.RefreshToken;
 import fr.skyost.launcher.tasks.VanillaImporter;
-import fr.skyost.launcher.utils.JsonObject.ObjectType;
 import fr.skyost.launcher.utils.LogUtils;
+import fr.skyost.launcher.utils.JSONObject.ObjectType;
 import fr.skyost.launcher.utils.LogUtils.ErrorOutputStream;
 import fr.skyost.launcher.utils.SystemManager;
 import fr.skyost.launcher.utils.SystemManager.OS;
@@ -31,34 +32,39 @@ import fr.skyost.launcher.utils.Utils;
 
 public class Skyolauncher {
 
-	public static final SystemManager system = new SystemManager();
+	public static final SystemManager SYSTEM = new SystemManager();
+	
 	public static LauncherConfig config;
 	public static ConsoleFrame console;
 	public static Boolean isOnline;
 
 	public static void main(final String[] args) {
 		try {
+			final ConnectivityChecker checker = new ConnectivityChecker();
+			checker.start();
+			checker.waitForThread();
+			LogUtils.log(null, null);
 			config = new LauncherConfig("launcher");
-			final File mcDir = system.getMinecraftDirectory();
+			final File mcDir = SYSTEM.getMinecraftDirectory();
 			mcDir.mkdirs();
 			final List<String> argsList = Arrays.asList(args);
 			PgsLookAndFeel.setCurrentTheme(new LauncherTheme());
 			UIManager.setLookAndFeel(new PgsLookAndFeel());
 			Utils.setUIFont(new FontUIResource(LauncherConstants.LAUNCHER_FONT));
-			if(system.getPlatform().getOS() == OS.LINUX) {
+			if(SYSTEM.getPlatform().getOS() == OS.LINUX) {
 				JFrame.setDefaultLookAndFeelDecorated(true);
 				JDialog.setDefaultLookAndFeelDecorated(true);
 			}
-			final File appDir = system.getApplicationDirectory();
+			final File appDir = SYSTEM.getApplicationDirectory();
 			if(!appDir.exists()) {
 				appDir.mkdir();
 			}
-			if(!argsList.contains("-noconsole")) {
+			if(argsList.contains("-console")) {
 				console = new ConsoleFrame();
 				console.setVisible(true);
 			}
 			System.setErr(new PrintStream(new ErrorOutputStream()));
-			LogUtils.log(Level.INFO, LauncherConstants.LAUNCHER_PREFIX + Utils.buildTitle(true));
+			LogUtils.log(Level.INFO, LauncherConstants.LAUNCHER_PREFIX + Utils.buildTitle(isOnline));
 			LogUtils.log(null, null);
 			LogUtils.log(Level.INFO, LauncherConstants.LAUNCHER_PREFIX + "Loading profiles...");
 			if(ObjectType.PROFILE.directory.exists()) {

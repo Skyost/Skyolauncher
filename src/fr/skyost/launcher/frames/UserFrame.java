@@ -32,11 +32,14 @@ import fr.skyost.launcher.tasks.UserUUID;
 public class UserFrame extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public final JButton btnLogIn = new JButton("Log in !") {
-		private static final long serialVersionUID = 1L; {
+
+		private static final long serialVersionUID = 1L;
+		{
 			setFont(getFont().deriveFont(Font.BOLD));
 		}
+
 	};
 	private static final List<UserChangesListener> listeners = new ArrayList<UserChangesListener>();
 
@@ -109,7 +112,7 @@ public class UserFrame extends JDialog {
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addContainerGap().addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblUsername).addComponent(txtfldUsername, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblPassword).addComponent(pswrdfldPassword, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(chckbxOfflineMode).addPreferredGap(ComponentPlacement.RELATED, 40, Short.MAX_VALUE).addComponent(btnLogIn).addContainerGap()));
 		pane.setLayout(groupLayout);
 	}
-	
+
 	public static final void addListener(final UserChangesListener listener) {
 		listeners.add(listener);
 	}
@@ -117,7 +120,7 @@ public class UserFrame extends JDialog {
 	public interface UserChangesListener {
 
 		public void onUserSaved(final User user);
-		
+
 	}
 
 	public final void saveAndNotifyListeners(final User user) {
@@ -128,5 +131,5 @@ public class UserFrame extends JDialog {
 		}
 		this.dispose();
 	}
-	
+
 }

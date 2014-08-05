@@ -46,6 +46,7 @@ public class LogUtils {
 		System.out.println(text);
 		if(textArea != null) {
 			textArea.append(text + LINE_SEPARATOR);
+			textArea.setCaretPosition(textArea.getDocument().getLength());
 		}
 	}
 

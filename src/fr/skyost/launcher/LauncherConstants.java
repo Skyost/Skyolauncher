@@ -20,7 +20,7 @@ public class LauncherConstants {
 	/* Launcher globals options. */
 
 	public static final String LAUNCHER_NAME = "Skyolauncher";
-	public static final String LAUNCHER_VERSION = "0.1.2";
+	public static final String LAUNCHER_VERSION = "0.2";
 	public static final String LAUNCHER_STATUS = "BETA";
 	public static final String[] LAUNCHER_AUTHORS = new String[]{"Skyost"};
 	public static final String LAUNCHER_PREFIX = "[Launcher] ";
@@ -49,6 +49,11 @@ public class LauncherConstants {
 	public static final String AUTO_UPDATER_PREFIX = "[Updater] ";
 	public static final String LATEST_VERSION_TXT = "http://www.skyost.eu/skyolauncher/latest.txt";
 	public static final String LATEST_VERSION_JAR = "http://www.skyost.eu/skyolauncher/download.php";
+	
+	/* ConnectivityChecker options. */
+	
+	public static final String CONNECTIVITY_CHECKER_PREFIX = "[Connectivity] ";
+	public static final String[] CONNECTIVITY_CHECKER_URLS = new String[]{"http://www.google.com", "http://www.facebook.com", "http://www.yahoo.fr", "http://www.skyost.eu"};
 	
 	/* ChangelogDownloader options. */
 	

@@ -10,19 +10,30 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.logging.Level;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.swing.JProgressBar;
 
 import fr.skyost.launcher.LauncherConstants;
 
 public class ConnectionUtils {
 
-	public static final boolean isOnline() {
+	public static final boolean isOnline(final String... urls) throws MalformedURLException {
+		for(final String url : urls) {
+			if(isOnline(new URL(url))) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public static final boolean isOnline(final URL url) {
 		try {
-			((HttpURLConnection)new URL("http://www.google.com").openConnection()).getContent();
+			((HttpURLConnection)url.openConnection()).getContent();
 			return true;
 		}
 		catch(final Exception ex) {}
@@ -105,7 +116,7 @@ public class ConnectionUtils {
 		return builder.toString();
 	}
 
-	public static final boolean download(final String site, final File pathTo) {
+	public static final boolean download(final String site, final File pathTo, final JProgressBar progressBar) {
 		try {
 			final HttpURLConnection connection = (HttpURLConnection)new URL(site).openConnection();
 			connection.addRequestProperty("User-Agent", LauncherConstants.LAUNCHER_NAME + " v" + LauncherConstants.LAUNCHER_VERSION);
@@ -115,21 +126,26 @@ public class ConnectionUtils {
 				return false;
 			}
 			final long size = connection.getContentLengthLong();
-			long lastPercent = 0;
-			long percent = 0;
+			int lastPercent = 0;
+			int percent = 0;
 			float totalDataRead = 0;
 			final InputStream inputStream = connection.getInputStream();
 			final FileOutputStream fileOutputStream = new FileOutputStream(pathTo);
 			final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream, 1024);
 			final byte[] data = new byte[1024];
 			int i = 0;
+			final String fileName = pathTo.getName();
 			while((i = inputStream.read(data, 0, 1024)) >= 0) {
 				totalDataRead += i;
 				bufferedOutputStream.write(data, 0, i);
-				percent = ((long)(totalDataRead * 100) / size);
+				percent = (int)((totalDataRead * 100) / size);
 				if(lastPercent != percent) {
 					lastPercent = percent;
 					LogUtils.append(percent + "%");
+					if(progressBar != null) {
+						progressBar.setValue(percent);
+						progressBar.setString(fileName + " " + percent + "%");
+					}
 				}
 			}
 			bufferedOutputStream.close();

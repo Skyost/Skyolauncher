@@ -9,8 +9,9 @@ import java.util.Set;
 
 import com.google.gson.JsonSyntaxException;
 
+import fr.skyost.launcher.ProfilesManager.LauncherProfile;
 import fr.skyost.launcher.tasks.AuthUser.Property;
-import fr.skyost.launcher.utils.JsonObject;
+import fr.skyost.launcher.utils.JSONObject;
 
 public class UsersManager {
 
@@ -21,24 +22,29 @@ public class UsersManager {
 	}
 
 	public static final void removeUser(final String username) {
+		removeUser(username, true);
+	}
+	
+	public static final void removeUser(final String username, final boolean fromLauncher) {
+		final User user = getUser(username);
+		if(user == null) {
+			return;
+		}
+		for(final LauncherProfile profile : ProfilesManager.getProfiles()) {
+			if(fromLauncher && profile.user != null && profile.user.equals(user.uuid)) {
+				profile.user = null;
+				profile.save();
+			}
+		}
 		users.remove(username);
 	}
 
 	public static final void removeUser(final User user) {
 		for(final Entry<String, User> entry : users.entrySet()) {
 			if(entry.getValue().equals(user)) {
-				users.remove(entry.getKey());
+				removeUser(entry.getKey());
 			}
 		}
-	}
-
-	public static final String getUsername(final User user) {
-		for(final Entry<String, User> entry : users.entrySet()) {
-			if(entry.getValue().equals(user)) {
-				return entry.getKey();
-			}
-		}
-		return null;
 	}
 
 	public static final User getUser(final String username) {
@@ -85,7 +91,7 @@ public class UsersManager {
 		users.put(username, user);
 	}
 
-	public static class User extends JsonObject {
+	public static class User extends JSONObject {
 
 		public String username;
 		public String uuid;

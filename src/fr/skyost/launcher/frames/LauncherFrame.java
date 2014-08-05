@@ -8,6 +8,7 @@ import java.awt.Frame;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Timer;
@@ -36,6 +37,9 @@ import fr.skyost.launcher.tasks.RefreshToken;
 import fr.skyost.launcher.tasks.RefreshToken.RefreshTokenListener;
 import fr.skyost.launcher.tasks.ServicesStatus;
 import fr.skyost.launcher.tasks.ServicesStatus.ServiceStatusListener;
+import fr.skyost.launcher.utils.Utils;
+
+import javax.swing.JProgressBar;
 
 public class LauncherFrame extends JFrame implements ProfileChangesListener, ServiceStatusListener, GameTasksListener, RefreshTokenListener {
 
@@ -52,6 +56,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 				setSelectedItem(Skyolauncher.config.latestProfile.toString());
 			}
 		}
+
 	};
 	private final JLabel lblMinecraftWebsiteStatus = new JLabel("Please wait...") {
 
@@ -60,6 +65,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			setFont(getFont().deriveFont(Font.ITALIC));
 			setForeground(Color.BLACK);
 		}
+
 	};
 	private final JLabel lblMojangAuthServerStatus = new JLabel("Please wait...") {
 
@@ -68,6 +74,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			setFont(getFont().deriveFont(Font.ITALIC));
 			setForeground(Color.BLACK);
 		}
+
 	};
 	private final JLabel lblMinecraftSkinsServerStatus = new JLabel("Please wait...") {
 
@@ -76,6 +83,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			setFont(getFont().deriveFont(Font.ITALIC));
 			setForeground(Color.BLACK);
 		}
+
 	};
 	private final HashMap<String, JLabel> status = new HashMap<String, JLabel>() {
 
@@ -85,6 +93,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			put("authserver.mojang.com", lblMojangAuthServerStatus);
 			put("skins.minecraft.net", lblMinecraftSkinsServerStatus);
 		}
+
 	};
 	private final JButton btnDeleteProfile = new JButton("Delete profile...");
 	private final JButton btnEditProfile = new JButton("Edit profile...");
@@ -94,6 +103,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 		{
 			setFont(getFont().deriveFont(Font.BOLD));
 		}
+
 	};
 	private boolean tokensRefreshed = true;
 
@@ -103,6 +113,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 		ProfileFrame.addListener(this);
 		ServicesStatus.addListener(this);
 		new Timer().scheduleAtFixedRate(new ServicesStatus(status.keySet()), 0, 40000);
+		this.setTitle(Utils.buildTitle(Skyolauncher.isOnline));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setIconImage(LauncherConstants.LAUNCHER_ICON);
 		this.setLocation(Skyolauncher.config.launcherPointX, Skyolauncher.config.launcherPointY);
@@ -111,12 +122,21 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 		final Container pane = this.getContentPane();
 		pane.setBackground(new Color(241, 237, 228));
 		final JLabel lblLogo = new JLabel(new ImageIcon(LauncherConstants.LAUNCHER_IMAGE));
+		final JProgressBar prgBarDownload = new JProgressBar();
+		prgBarDownload.setStringPainted(true);
+		prgBarDownload.setVisible(false);
 		btnPlay.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(final ActionEvent event) {
-				new GameTasks(ProfilesManager.getProfile((String)cboxProfile.getSelectedItem())).start();
+				final LauncherProfile profile = ProfilesManager.getProfile((String)cboxProfile.getSelectedItem());
+				if(profile.user == null) {
+					JOptionPane.showMessageDialog(null, "Cannot launch the selected profile : user is null.", "Error !", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				new GameTasks(profile, prgBarDownload).start();
 			}
+			
 		});
 		if(ProfilesManager.getProfiles().length == 0) {
 			updateBtnPlay(false);
@@ -141,12 +161,17 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 					Skyolauncher.config.launcherPointX = location.x;
 					Skyolauncher.config.launcherPointY = location.y;
 					Skyolauncher.config.save();
+					final File tempDir = Skyolauncher.SYSTEM.getLauncherTemporaryDirectory();
+					if(tempDir.exists()) {
+						tempDir.delete();
+					}
 				}
 				catch(final Exception ex) {
 					ex.printStackTrace();
-					JOptionPane.showMessageDialog(null, ex.getClass().getName(), "Error !", JFrame.ERROR);
+					JOptionPane.showMessageDialog(null, ex.getClass().getName(), "Error !", JOptionPane.ERROR_MESSAGE);
 				}
 			}
+			
 		});
 		final JLabel lblMinecraftWebsite = new JLabel("Minecraft website :");
 		lblMinecraftWebsite.setForeground(Color.BLACK);
@@ -163,6 +188,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 				profileEditor.loadProfile(null);
 				profileEditor.setVisible(true);
 			}
+			
 		});
 		btnDeleteProfile.addActionListener(new ActionListener() {
 
@@ -170,6 +196,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			public void actionPerformed(final ActionEvent event) {
 				deleteProfile((String)cboxProfile.getSelectedItem());
 			}
+			
 		});
 		btnEditProfile.addActionListener(new ActionListener() {
 
@@ -179,10 +206,81 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 				profileEditor.loadProfile(ProfilesManager.getProfile((String)cboxProfile.getSelectedItem()));
 				profileEditor.setVisible(true);
 			}
+			
 		});
 		final GroupLayout groupLayout = new GroupLayout(pane);
-		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(cboxProfile, 0, 514, Short.MAX_VALUE).addContainerGap()).addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(btnPlay, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)).addGroup(groupLayout.createSequentialGroup().addGap(10).addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addComponent(btnAddNewProfile, GroupLayout.PREFERRED_SIZE, 170, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnEditProfile, GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.RELATED).addComponent(btnDeleteProfile, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.RELATED)).addComponent(lblLogo, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE).addGroup(groupLayout.createSequentialGroup().addGroup(groupLayout.createParallelGroup(Alignment.LEADING).addComponent(lblMinecraftWebsite).addComponent(lblMinecraftSkinsServer).addComponent(lblMojangAuthServer)).addPreferredGap(ComponentPlacement.RELATED, 309, Short.MAX_VALUE).addGroup(groupLayout.createParallelGroup(Alignment.TRAILING).addComponent(lblMojangAuthServerStatus).addGroup(groupLayout.createSequentialGroup().addComponent(lblMinecraftSkinsServerStatus).addPreferredGap(ComponentPlacement.RELATED)).addGroup(groupLayout.createSequentialGroup().addComponent(lblMinecraftWebsiteStatus).addPreferredGap(ComponentPlacement.RELATED))))))).addGap(9)));
-		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(Alignment.LEADING).addGroup(groupLayout.createSequentialGroup().addContainerGap().addComponent(lblLogo).addGap(18).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblMinecraftWebsite).addComponent(lblMinecraftWebsiteStatus)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblMojangAuthServer).addComponent(lblMojangAuthServerStatus, GroupLayout.PREFERRED_SIZE, 13, GroupLayout.PREFERRED_SIZE)).addPreferredGap(ComponentPlacement.RELATED).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(lblMinecraftSkinsServer).addComponent(lblMinecraftSkinsServerStatus)).addPreferredGap(ComponentPlacement.RELATED, 49, Short.MAX_VALUE).addGroup(groupLayout.createParallelGroup(Alignment.BASELINE).addComponent(btnAddNewProfile).addComponent(btnDeleteProfile).addComponent(btnEditProfile)).addGap(3).addComponent(cboxProfile, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE).addPreferredGap(ComponentPlacement.UNRELATED).addComponent(btnPlay).addContainerGap()));
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(cboxProfile, 0, 514, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(btnPlay, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE))
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(10)
+							.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addComponent(btnAddNewProfile, GroupLayout.PREFERRED_SIZE, 170, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnEditProfile, GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+									.addPreferredGap(ComponentPlacement.RELATED)
+									.addComponent(btnDeleteProfile, GroupLayout.PREFERRED_SIZE, 179, GroupLayout.PREFERRED_SIZE)
+									.addPreferredGap(ComponentPlacement.RELATED))
+								.addComponent(lblLogo, GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+								.addGroup(groupLayout.createSequentialGroup()
+									.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+										.addComponent(lblMinecraftWebsite)
+										.addComponent(lblMinecraftSkinsServer)
+										.addComponent(lblMojangAuthServer))
+									.addPreferredGap(ComponentPlacement.RELATED, 403, Short.MAX_VALUE)
+									.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
+										.addComponent(lblMojangAuthServerStatus)
+										.addGroup(groupLayout.createSequentialGroup()
+											.addComponent(lblMinecraftSkinsServerStatus)
+											.addPreferredGap(ComponentPlacement.RELATED))
+										.addGroup(groupLayout.createSequentialGroup()
+											.addComponent(lblMinecraftWebsiteStatus)
+											.addPreferredGap(ComponentPlacement.RELATED)))))))
+					.addGap(9))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(prgBarDownload, GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
+					.addContainerGap())
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(lblLogo)
+					.addGap(18)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblMinecraftWebsite)
+						.addComponent(lblMinecraftWebsiteStatus))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblMojangAuthServer)
+						.addComponent(lblMojangAuthServerStatus, GroupLayout.PREFERRED_SIZE, 13, GroupLayout.PREFERRED_SIZE))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblMinecraftSkinsServer)
+						.addComponent(lblMinecraftSkinsServerStatus))
+					.addGap(12)
+					.addComponent(prgBarDownload, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnAddNewProfile)
+						.addComponent(btnDeleteProfile)
+						.addComponent(btnEditProfile))
+					.addGap(3)
+					.addComponent(cboxProfile, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(btnPlay)
+					.addContainerGap())
+		);
 		pane.setLayout(groupLayout);
 		this.pack();
 	}
@@ -280,7 +378,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 				final User newUser = new User(session.selectedProfile.name, session.selectedProfile.id, oldUser.accountName, true, session.accessToken, session.user.properties);
 				profileEditor.model.removeElement(oldUser.username);
 				oldUser.getFile().delete();
-				UsersManager.removeUser(oldUser.username);
+				UsersManager.removeUser(oldUser.username, false);
 				newUser.save();
 				UsersManager.addUser(newUser);
 				profileEditor.model.addElement(newUser.username);
@@ -301,5 +399,4 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 			btnPlay.setText("Play !");
 		}
 	}
-	
 }
