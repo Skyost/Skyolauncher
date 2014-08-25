@@ -29,7 +29,9 @@ public class StreamReader extends Thread {
 			}
 			reader.close();
 			for(final Frame frame : JFrame.getFrames()) {
-				frame.setVisible(true); // TODO Actually executed twice.
+				if(!frame.isVisible()) {
+					frame.setVisible(true);
+				}
 			}
 		}
 		catch(final Exception ex) {

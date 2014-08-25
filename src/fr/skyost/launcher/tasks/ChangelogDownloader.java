@@ -11,23 +11,20 @@ public class ChangelogDownloader extends Thread {
 	
 	@Override
 	public final void run() {
-		ChangelogFrame frame = ChangelogFrame.getInstance();
-		if(frame == null) {
+		final ChangelogFrame frame = ChangelogFrame.getInstance();
+		if(!frame.isChangeLogDownloaded()) {
 			try {
 				LogUtils.log(Level.INFO, LauncherConstants.CHANGELOG_DOWNLOADER_PREFIX + "Downloading changelog...");
 				final String changelog = ConnectionUtils.httpGet(LauncherConstants.CHANGELOG_URL, System.lineSeparator());
 				LogUtils.log(Level.INFO, LauncherConstants.CHANGELOG_DOWNLOADER_PREFIX + "Done.");
-				frame = new ChangelogFrame();
 				frame.setChangelog(changelog);
-				frame.setVisible(true);
+				frame.setChangeLogDownloaded(true);
 			}
 			catch(final Exception ex) {
 				ex.printStackTrace();
 			}
 		}
-		else {
-			frame.setVisible(true);
-		}
+		frame.setVisible(true);
 	}
 
 }

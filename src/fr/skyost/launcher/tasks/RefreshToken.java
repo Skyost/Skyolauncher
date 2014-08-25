@@ -21,11 +21,7 @@ public class RefreshToken extends Thread {
 	private final User[] users;
 	private static final List<RefreshTokenListener> listeners = new ArrayList<RefreshTokenListener>();
 
-	public RefreshToken(final User user) {
-		this(new User[]{user});
-	}
-
-	public RefreshToken(final User[] users) {
+	public RefreshToken(final User... users) {
 		this.users = users;
 	}
 

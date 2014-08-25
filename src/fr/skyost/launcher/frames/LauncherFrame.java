@@ -337,7 +337,7 @@ public class LauncherFrame extends JFrame implements ProfileChangesListener, Ser
 					}
 				}
 				else {
-					System.exit(0);
+					this.dispose();
 				}
 			}
 		}

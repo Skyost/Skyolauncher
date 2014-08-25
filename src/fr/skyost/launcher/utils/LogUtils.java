@@ -19,14 +19,6 @@ public class LogUtils {
 	private static final List<String> values = new ArrayList<String>();
 	private static final String LINE_SEPARATOR = System.lineSeparator();
 
-	public LogUtils() {
-		this(null);
-	}
-
-	public LogUtils(final JTextArea textArea) {
-		LogUtils.textArea = textArea;
-	}
-
 	public static final void setTextArea(final JTextArea textArea) {
 		LogUtils.textArea = textArea;
 	}
@@ -71,10 +63,7 @@ public class LogUtils {
 
 		@Override
 		public void write(final byte[] buffer, final int offset, final int length) throws IOException {
-			final String line = new String(buffer, offset, length);
-			if(line != null || line.length() != 0) {
-				log(Level.SEVERE, line);
-			}
+			log(Level.SEVERE, new String(buffer, offset, length));
 		}
 		
 	}

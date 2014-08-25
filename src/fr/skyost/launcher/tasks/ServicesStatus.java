@@ -74,14 +74,7 @@ public class ServicesStatus extends TimerTask {
 	public interface ServiceStatusListener {
 
 		public void onStatusCheckBegin();
-		
 		public void onStatusCheckFinished(final HashMap<String, Boolean> servicesStatus);
-
-	}
-
-	public class Status {
-
-		public String minecraftWebsite;
 
 	}
 

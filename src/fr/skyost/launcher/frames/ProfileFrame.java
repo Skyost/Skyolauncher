@@ -122,7 +122,7 @@ public class ProfileFrame extends JDialog implements UserChangesListener, Versio
 		this.loadedProfile = profile;
 		this.setIconImage(LauncherConstants.LAUNCHER_ICON);
 		this.setTitle("Skyolauncher Profile Editor");
-		this.setPreferredSize(new Dimension(620, 292));
+		this.setPreferredSize(new Dimension(720, 292));
 		this.setType(Type.POPUP);
 		final Container pane = this.getContentPane();
 		pane.setBackground(background);
