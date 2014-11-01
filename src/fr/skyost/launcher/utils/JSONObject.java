@@ -28,15 +28,18 @@ public abstract class JSONObject {
 	
 	public final void load() throws JsonSyntaxException, IOException, IllegalArgumentException, IllegalAccessException {
 		final File file = getFile();
-		if(!file.exists()) {
-			save();
-		}
-		else {
+		if(file.exists()) {
 			final Class<?> clazz = this.getClass();
 			final Object subClass = new Gson().fromJson(Utils.getFileContent(file, null), clazz);
 			for(final Field field : clazz.getFields()) {
-				field.set(this, field.get(subClass));
+				final Object value = field.get(subClass);
+				if(value != null) {
+					field.set(this, value);
+				}
 			}
+		}
+		else {
+			save();
 		}
 	}
 	

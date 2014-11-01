@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import com.google.gson.Gson;
 
 import fr.skyost.launcher.LauncherConstants;
+import fr.skyost.launcher.Skyolauncher;
 import fr.skyost.launcher.UsersManager.User;
 import fr.skyost.launcher.frames.UserFrame;
 import fr.skyost.launcher.utils.ConnectionUtils;
@@ -30,10 +31,9 @@ public class AuthUser extends Thread {
 		LogUtils.log(Level.INFO, LauncherConstants.AUTH_USER_PREFIX + "Authenticating an user :");
 		LogUtils.log(Level.INFO, LauncherConstants.AUTH_USER_PREFIX + "Username : " + username);
 		LogUtils.log(Level.INFO, LauncherConstants.AUTH_USER_PREFIX + "Password : " + password.replaceAll(".", "x"));
-		final AuthSession session;
 		try {
 			final Gson gson = new Gson();
-			session = gson.fromJson(ConnectionUtils.httpJsonPost(LauncherConstants.AUTHENTICATION_URL, gson.toJson(new AuthRequest(username, password, LauncherConstants.CLIENT_TOKEN))), AuthSession.class);
+			final AuthSession session = gson.fromJson(ConnectionUtils.httpJsonPost(LauncherConstants.AUTHENTICATION_URL, gson.toJson(new AuthRequest(username, password, Skyolauncher.config.clientToken))), AuthSession.class);
 			LogUtils.log(Level.INFO, LauncherConstants.AUTH_USER_PREFIX + "Done.");
 			parent.saveAndNotifyListeners(new User(session.selectedProfile.name, session.selectedProfile.id, username, true, session.accessToken, session.user.properties));
 		}

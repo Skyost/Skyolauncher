@@ -20,7 +20,7 @@ public class LauncherConstants {
 	/* Launcher globals options. */
 
 	public static final String LAUNCHER_NAME = "Skyolauncher";
-	public static final String LAUNCHER_VERSION = "0.2.1";
+	public static final String LAUNCHER_VERSION = "0.2.2";
 	public static final String LAUNCHER_STATUS = "BETA";
 	public static final String[] LAUNCHER_AUTHORS = new String[]{"Skyost"};
 	public static final String LAUNCHER_PREFIX = "[Launcher] ";
@@ -30,7 +30,6 @@ public class LauncherConstants {
 
 	/* Client options. */
 
-	public static final String CLIENT_TOKEN = "skyolauncher";
 	public static final int CLIENT_VERSION = 14;
 
 	////////////////////////////////
@@ -74,7 +73,7 @@ public class LauncherConstants {
 	public static final String ASSETS_VIRTUAL_SUFFIX = "/virtual";
 	public static final String ASSETS_LEGACY_SUFFIX = "/legacy";
 	public static final String MINECRAFT_SERVER_IP = null; // Leave null if you do not want to enable this option.
-	public static final int MINECRAFT_SERVER_PORT = 25565;
+	public static final short MINECRAFT_SERVER_PORT = 25565;
 
 	/* RefreshToken options. */
 
@@ -110,14 +109,13 @@ public class LauncherConstants {
 	/* Others things... */
 
 	private static final Font loadFontFromRes(final int format, final String path, final float size) {
-		Font font = null;
 		try {
-			font = Font.createFont(format, Skyolauncher.class.getResourceAsStream(path)).deriveFont(size);
+			return Font.createFont(format, Skyolauncher.class.getResourceAsStream(path)).deriveFont(size);
 		}
 		catch(final Exception ex) {
 			ex.printStackTrace();
 		}
-		return font;
+		return null;
 	}
 
 	private static final Image loadImageFromRes(final String path) {

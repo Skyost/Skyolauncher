@@ -36,7 +36,7 @@ public class RefreshToken extends Thread {
 				final Gson gson = new Gson();
 				for(final User user : users) {
 					LogUtils.log(Level.INFO, LauncherConstants.REFRESH_TOKEN_PREFIX + "Refreshing access token for " + user.accountName + "...");
-					final String response = ConnectionUtils.httpJsonPost(LauncherConstants.REFRESH_TOKEN_URL, gson.toJson(new SimpleSession(user.accessToken, LauncherConstants.CLIENT_TOKEN)));
+					final String response = ConnectionUtils.httpJsonPost(LauncherConstants.REFRESH_TOKEN_URL, gson.toJson(new SimpleSession(user.accessToken, Skyolauncher.config.clientToken)));
 					final AuthSession session = gson.fromJson(response, AuthSession.class);
 					if(session.accessToken != null && session.clientToken != null) {
 						result.put(user, session);

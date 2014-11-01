@@ -1,6 +1,7 @@
 package fr.skyost.launcher;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import com.google.gson.JsonSyntaxException;
 
@@ -14,10 +15,12 @@ public class LauncherConfig extends JSONObject {
 	public int consolePointY = 0;
 	public String latestProfile = null;
 	public boolean vanillaDataImported = false;
+	public String clientToken = UUID.randomUUID().toString();
 
 	public LauncherConfig(final String name) throws JsonSyntaxException, IllegalArgumentException, IllegalAccessException, IOException {
 		super(ObjectType.CONFIG, name);
 		load();
+		save();
 	}
 	
 }

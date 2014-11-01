@@ -21,11 +21,11 @@ public class UsersManager {
 		setUser(user.username, user);
 	}
 
-	public static final void removeUser(final String username) {
-		removeUser(username, true);
+	public static final void removeUserFromList(final String username) {
+		removeUserFromList(username, true);
 	}
 	
-	public static final void removeUser(final String username, final boolean fromLauncher) {
+	public static final void removeUserFromList(final String username, final boolean fromLauncher) {
 		final User user = getUser(username);
 		if(user == null) {
 			return;
@@ -42,7 +42,7 @@ public class UsersManager {
 	public static final void removeUser(final User user) {
 		for(final Entry<String, User> entry : users.entrySet()) {
 			if(entry.getValue().equals(user)) {
-				removeUser(entry.getKey());
+				removeUserFromList(entry.getKey());
 			}
 		}
 	}
@@ -95,7 +95,7 @@ public class UsersManager {
 
 		public String username;
 		public String uuid;
-		public String accountName; //For migrated accounts.
+		public String accountName; // For migrated accounts.
 		public boolean isOnline;
 		public String accessToken;
 		public List<Property> properties;

@@ -20,11 +20,11 @@ public class ProfilesManager {
 		setProfile(profile.name, profile);
 	}
 
-	public static final void removeProfile(final String profileName) {
+	public static final void removeProfileFromList(final String profileName) {
 		profiles.remove(profileName);
 	}
 
-	public static final void removeProfile(final LauncherProfile profile) {
+	public static final void removeProfileFromList(final LauncherProfile profile) {
 		for(final Entry<String, LauncherProfile> entry : profiles.entrySet()) {
 			if(entry.getValue().equals(profile)) {
 				profiles.remove(entry.getKey());
